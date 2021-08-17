@@ -18,9 +18,10 @@
  */
 package org.apache.iotdb.db.integration;
 
+import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.constant.TestConstant;
-import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.integration.env.EnvUtil;
 import org.apache.iotdb.jdbc.Config;
 import org.apache.iotdb.tsfile.common.conf.TSFileConfig;
 import org.apache.iotdb.tsfile.common.conf.TSFileDescriptor;
@@ -29,9 +30,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -41,6 +42,7 @@ import static org.junit.Assert.fail;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
+@Category({StandaloneTest.class})
 public class IoTDBCloseIT {
 
   private static TSFileConfig tsFileConfig = TSFileDescriptor.getInstance().getConfig();
@@ -51,40 +53,24 @@ public class IoTDBCloseIT {
   @BeforeClass
   public static void setUp() throws Exception {
 
-    EnvironmentUtils.closeStatMonitor();
-
-    // use small page setting
-    // origin value
-    maxNumberOfPointsInPage = tsFileConfig.getMaxNumberOfPointsInPage();
-    pageSizeInByte = tsFileConfig.getPageSizeInByte();
-    groupSizeInByte = tsFileConfig.getGroupSizeInByte();
-
     // new value
     tsFileConfig.setMaxNumberOfPointsInPage(1000);
     tsFileConfig.setPageSizeInByte(1024 * 150);
     tsFileConfig.setGroupSizeInByte(1024 * 1000);
     IoTDBDescriptor.getInstance().getConfig().setMemtableSizeThreshold(1024 * 1000);
 
-    EnvironmentUtils.envSetUp();
+    EnvUtil.init();
 
     insertData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    // recovery value
-    tsFileConfig.setMaxNumberOfPointsInPage(maxNumberOfPointsInPage);
-    tsFileConfig.setPageSizeInByte(pageSizeInByte);
-    tsFileConfig.setGroupSizeInByte(groupSizeInByte);
-    IoTDBDescriptor.getInstance().getConfig().setMemtableSizeThreshold(groupSizeInByte);
-    EnvironmentUtils.cleanEnv();
+    EnvUtil.clean();
   }
 
   private static void insertData() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : TestConstant.create_sql) {
@@ -121,9 +107,7 @@ public class IoTDBCloseIT {
     String selectSql = "select * from root";
 
     Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement1 = connection.createStatement();
         Statement statement2 = connection.createStatement()) {
 

@@ -18,20 +18,21 @@
  */
 package org.apache.iotdb.db.integration;
 
+import org.apache.iotdb.base.category.ClusterTest;
+import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.exception.metadata.StorageGroupNotSetException;
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvUtil;
 import org.apache.iotdb.rpc.TSStatusCode;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -40,6 +41,7 @@ import java.util.Locale;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+@Category({StandaloneTest.class, ClusterTest.class})
 public class IoTDBFlushQueryMergeIT {
 
   private static final Logger logger = LoggerFactory.getLogger(IoTDBFlushQueryMergeIT.class);
@@ -65,21 +67,17 @@ public class IoTDBFlushQueryMergeIT {
   @BeforeClass
   public static void setUp() throws Exception {
     Locale.setDefault(Locale.ENGLISH);
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+    EnvUtil.init();
     insertData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
+    EnvUtil.clean();
   }
 
   private static void insertData() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : sqls) {
@@ -93,10 +91,7 @@ public class IoTDBFlushQueryMergeIT {
   @Test
   public void selectAllSQLTest() throws ClassNotFoundException {
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("SELECT * FROM root");
       Assert.assertTrue(hasResultSet);
@@ -116,12 +111,9 @@ public class IoTDBFlushQueryMergeIT {
 
   @Test
   public void testFlushGivenGroup() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
     String insertTemplate =
         "INSERT INTO root.group%d(timestamp, s1, s2, s3) VALUES (%d, %d, %f, %s)";
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.group1");
       statement.execute("SET STORAGE GROUP TO root.group2");
@@ -168,10 +160,7 @@ public class IoTDBFlushQueryMergeIT {
   // bug fix test, https://issues.apache.org/jira/browse/IOTDB-875
   @Test
   public void testFlushGivenGroupNoData() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.nodatagroup1");
       statement.execute("SET STORAGE GROUP TO root.nodatagroup2");
@@ -189,10 +178,7 @@ public class IoTDBFlushQueryMergeIT {
   // bug fix test, https://issues.apache.org/jira/browse/IOTDB-875
   @Test
   public void testFlushNotExistGroupNoData() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.noexist.nodatagroup1");
       try {

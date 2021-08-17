@@ -18,16 +18,17 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.base.category.ClusterTest;
+import org.apache.iotdb.base.category.StandaloneTest;
+import org.apache.iotdb.integration.env.EnvUtil;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -40,6 +41,7 @@ import java.util.Map;
 
 import static org.junit.Assert.fail;
 
+@Category({StandaloneTest.class, ClusterTest.class})
 public class IoTDBDisableAlignIT {
 
   private static String[] sqls =
@@ -99,21 +101,17 @@ public class IoTDBDisableAlignIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+    EnvUtil.init();
     insertData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
+    EnvUtil.clean();
   }
 
   private static void insertData() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : sqls) {
@@ -141,10 +139,7 @@ public class IoTDBDisableAlignIT {
           "1000,22222,946684800000,100,null,null,null,null,null,null,null,null,",
         };
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select * from root.vehicle disable align");
       Assert.assertTrue(hasResultSet);
@@ -208,10 +203,7 @@ public class IoTDBDisableAlignIT {
           "1000,22222,1000,22222,946684800000,100,",
         };
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute("select s0,s0,s1 from root.vehicle.d0 disable align");
@@ -265,10 +257,7 @@ public class IoTDBDisableAlignIT {
           "1000,22222,null,null,946684800000,100,null,null,null,null,null,null,",
         };
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -319,10 +308,7 @@ public class IoTDBDisableAlignIT {
 
   @Test
   public void selectSlimitTest() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute("select * from root.vehicle.* slimit 2 soffset 1 disable align");
@@ -346,10 +332,7 @@ public class IoTDBDisableAlignIT {
 
   @Test
   public void errorCaseTest1() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(
           "select * from root.vehicle where time = 3 Fill(int32[previous, 5ms]) disable align");
@@ -361,10 +344,7 @@ public class IoTDBDisableAlignIT {
 
   @Test
   public void errorCaseTest2() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("select count(*) from root.vehicle GROUP BY ([2,50),20ms) disable align");
       fail("No exception thrown.");
@@ -375,10 +355,7 @@ public class IoTDBDisableAlignIT {
 
   @Test
   public void errorCaseTest3() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("select count(*) from root disable align");
       fail("No exception thrown.");

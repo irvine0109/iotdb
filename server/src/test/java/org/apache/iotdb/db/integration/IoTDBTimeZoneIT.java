@@ -18,8 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.base.category.ClusterTest;
+import org.apache.iotdb.base.category.StandaloneTest;
+import org.apache.iotdb.integration.env.EnvUtil;
 import org.apache.iotdb.jdbc.IoTDBConnection;
 
 import org.apache.thrift.TException;
@@ -27,15 +28,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.fail;
 
+@Category({StandaloneTest.class, ClusterTest.class})
 public class IoTDBTimeZoneIT {
 
   private static String[] insertSqls =
@@ -66,14 +68,13 @@ public class IoTDBTimeZoneIT {
 
   @Before
   public void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+    EnvUtil.init();
     createTimeseries();
   }
 
   @After
   public void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
+    EnvUtil.clean();
   }
 
   /**
@@ -98,11 +99,7 @@ public class IoTDBTimeZoneIT {
    */
   @Test
   public void timezoneTest() throws ClassNotFoundException, SQLException, TException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (IoTDBConnection connection =
-            (IoTDBConnection)
-                DriverManager.getConnection(
-                    Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (IoTDBConnection connection = (IoTDBConnection) EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       String insertSQLTemplate = "insert into root.timezone(timestamp,tz1) values(%s,%s)";
@@ -146,10 +143,7 @@ public class IoTDBTimeZoneIT {
   }
 
   private void createTimeseries() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : insertSqls) {

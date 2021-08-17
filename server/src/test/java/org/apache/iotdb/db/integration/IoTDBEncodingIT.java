@@ -19,6 +19,7 @@
 
 package org.apache.iotdb.db.integration;
 
+import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.engine.StorageEngine;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
 import org.apache.iotdb.jdbc.Config;
@@ -27,6 +28,7 @@ import org.apache.iotdb.tsfile.common.conf.TSFileDescriptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -39,6 +41,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@Category({StandaloneTest.class})
 public class IoTDBEncodingIT {
 
   private static int partitionInterval = 100;

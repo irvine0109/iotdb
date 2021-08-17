@@ -19,16 +19,17 @@
 
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.base.category.ClusterTest;
+import org.apache.iotdb.base.category.StandaloneTest;
+import org.apache.iotdb.integration.env.EnvUtil;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,28 +37,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.junit.Assert.fail;
+
 /**
  * @author yuqi
  * @mail yuqi4733@gmail.com
  * @description your description
  * @time 27/9/20 22:56
  */
+@Category({StandaloneTest.class, ClusterTest.class})
 public class IoTDBResultSetIT {
   private static List<String> sqls = new ArrayList<>();
   private static Connection connection;
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
+    EnvUtil.init();
     initCreateSQLStatement();
-    EnvironmentUtils.envSetUp();
     insertData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
     close();
-    EnvironmentUtils.cleanEnv();
+    EnvUtil.clean();
   }
 
   private static void close() {
@@ -79,48 +82,53 @@ public class IoTDBResultSetIT {
   }
 
   private static void insertData() throws ClassNotFoundException, SQLException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    connection =
-        DriverManager.getConnection(Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
-    Statement statement = connection.createStatement();
+    try (Connection connection = EnvUtil.getConnection();
+        Statement statement = connection.createStatement()) {
 
-    for (String sql : sqls) {
-      statement.execute(sql);
+      for (String sql : sqls) {
+        statement.execute(sql);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
-
-    statement.close();
   }
 
   @Test
   public void testIntAndLongConversion() throws SQLException {
-    Statement st0 = connection.createStatement();
-    st0.execute(
-        "insert into root.t1.wf01.wt01(timestamp, status, type, grade) values (1000, true, 1, 1000)");
-    st0.execute(
-        "insert into root.t1.wf01.wt01(timestamp, status, type, grade) values (2000, false, 2, 2000)");
-    st0.close();
+    try (Connection connection = EnvUtil.getConnection()) {
+      Statement st0 = connection.createStatement();
+      st0.execute(
+          "insert into root.t1.wf01.wt01(timestamp, status, type, grade) values (1000, true, 1, 1000)");
+      st0.execute(
+          "insert into root.t1.wf01.wt01(timestamp, status, type, grade) values (2000, false, 2, 2000)");
+      st0.close();
 
-    Statement st1 = connection.createStatement();
-    ResultSet rs1 = st1.executeQuery("select count(status) from root.t1.wf01.wt01");
-    rs1.next();
-    // type of r1 is INT64(long), test long convert to int
-    int countStatus = rs1.getInt(1);
-    Assert.assertTrue(countStatus == 2L);
+      Statement st1 = connection.createStatement();
+      ResultSet rs1 = st1.executeQuery("select count(status) from root.t1.wf01.wt01");
+      rs1.next();
+      // type of r1 is INT64(long), test long convert to int
+      int countStatus = rs1.getInt(1);
+      Assert.assertTrue(countStatus == 2L);
 
-    ResultSet rs2 =
-        st1.executeQuery("select type from root.t1.wf01.wt01 where time = 1000 limit 1");
-    rs2.next();
-    // type of r2 is INT32(int), test int convert to long
-    long type = rs2.getLong(2);
-    Assert.assertTrue(type == 1);
+      ResultSet rs2 =
+          st1.executeQuery("select type from root.t1.wf01.wt01 where time = 1000 limit 1");
+      rs2.next();
+      // type of r2 is INT32(int), test int convert to long
+      long type = rs2.getLong(2);
+      Assert.assertTrue(type == 1);
 
-    ResultSet rs3 =
-        st1.executeQuery("select grade from root.t1.wf01.wt01 where time = 1000 limit 1");
-    rs3.next();
-    // type of r3 is INT64(long), test long convert to int
-    int grade = rs3.getInt(2);
-    Assert.assertTrue(grade == 1000);
+      ResultSet rs3 =
+          st1.executeQuery("select grade from root.t1.wf01.wt01 where time = 1000 limit 1");
+      rs3.next();
+      // type of r3 is INT64(long), test long convert to int
+      int grade = rs3.getInt(2);
+      Assert.assertTrue(grade == 1000);
 
-    st1.close();
+      st1.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
   }
 }

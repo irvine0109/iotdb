@@ -18,30 +18,31 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.exception.metadata.MetadataException;
+import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.metadata.PartialPath;
 import org.apache.iotdb.db.metadata.mnode.IMNode;
 import org.apache.iotdb.db.metadata.mnode.IMeasurementMNode;
 import org.apache.iotdb.db.service.IoTDB;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvUtil;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+@Category({StandaloneTest.class})
 public class IoTDBLastIT {
 
   private static final String[] dataSet1 =
@@ -96,7 +97,6 @@ public class IoTDBLastIT {
   public void setUp() throws Exception {
     EnvironmentUtils.closeStatMonitor();
     EnvironmentUtils.envSetUp();
-    Class.forName(Config.JDBC_DRIVER_NAME);
     prepareData();
   }
 
@@ -106,14 +106,13 @@ public class IoTDBLastIT {
   }
 
   @Test
-  public void lastWithEmptySeriesTest() throws Exception {
+  public void lastWithEmptySeriesTest() {
     String[] retArray =
         new String[] {
           "root.ln.wf02.status,true",
         };
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute(
@@ -138,11 +137,14 @@ public class IoTDBLastIT {
 
       resultSet = statement.getResultSet();
       Assert.assertFalse(resultSet.next());
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
   @Test
-  public void lastDescTimeTest() throws Exception {
+  public void lastDescTimeTest() {
     Set<String> retSet =
         new HashSet<>(
             Arrays.asList(
@@ -156,8 +158,7 @@ public class IoTDBLastIT {
                 "300,root.ln.wf01.wt03.temperature,23.1",
                 "300,root.ln.wf01.wt03.id,8"));
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       boolean hasResultSet = statement.execute("select last * from root.* order by time desc");
@@ -175,11 +176,14 @@ public class IoTDBLastIT {
         cnt++;
       }
       Assert.assertEquals(retSet.size(), cnt);
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
   @Test
-  public void lastCacheUpdateTest() throws SQLException, MetadataException {
+  public void lastCacheUpdateTest() {
     String[] retArray =
         new String[] {
           "500,root.ln.wf01.wt01.temperature,22.1",
@@ -193,8 +197,7 @@ public class IoTDBLastIT {
           "700,root.ln.wf01.wt01.id,3"
         };
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       boolean hasResultSet =
@@ -264,11 +267,14 @@ public class IoTDBLastIT {
         }
       }
       Assert.assertEquals(cnt, retArray.length);
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
   @Test
-  public void lastWithUnSeqFilesTest() throws SQLException, MetadataException {
+  public void lastWithUnSeqFilesTest() {
     String[] retArray =
         new String[] {
           "500,root.ln.wf01.wt02.temperature,15.7",
@@ -279,8 +285,7 @@ public class IoTDBLastIT {
           "600,root.ln.wf01.wt02.id,6"
         };
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       IMNode node =
@@ -356,15 +361,17 @@ public class IoTDBLastIT {
           cnt++;
         }
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
   @Test
-  public void lastWithEmptyChunkMetadataTest() throws SQLException, MetadataException {
+  public void lastWithEmptyChunkMetadataTest() {
     String[] retArray = new String[] {"300,root.ln.wf01.wt03.temperature,23.1"};
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       IMNode node =
@@ -394,15 +401,17 @@ public class IoTDBLastIT {
         }
         Assert.assertEquals(1, cnt);
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
   @Test
-  public void lastWithUnseqTimeLargerThanSeqTimeTest() throws SQLException, MetadataException {
+  public void lastWithUnseqTimeLargerThanSeqTimeTest() {
     String[] retArray = new String[] {"150,root.ln.wf01.wt04.temperature,31.2"};
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute(
@@ -437,18 +446,20 @@ public class IoTDBLastIT {
         }
         Assert.assertEquals(1, cnt);
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
   @Test
-  public void lastAfterDeletionTest() throws SQLException {
+  public void lastAfterDeletionTest() {
     String[] retArray =
         new String[] {
           "350,root.ln.wf01.wt05.temperature,31.2", "200,root.ln.wf01.wt05.temperature,78.2"
         };
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute(
@@ -493,15 +504,17 @@ public class IoTDBLastIT {
           cnt++;
         }
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
   @Test
-  public void lastWithFilterTest() throws SQLException {
+  public void lastWithFilterTest() {
     String[] retArray = new String[] {"500,root.ln.wf01.wt01.temperature,22.1"};
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute("select last temperature from root.ln.wf01.wt01");
@@ -533,13 +546,14 @@ public class IoTDBLastIT {
           cnt++;
         }
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
   private void prepareData() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : dataSet1) {
@@ -554,6 +568,7 @@ public class IoTDBLastIT {
 
     } catch (Exception e) {
       e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 }

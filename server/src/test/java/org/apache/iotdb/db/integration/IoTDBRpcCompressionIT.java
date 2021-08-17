@@ -19,6 +19,7 @@
 
 package org.apache.iotdb.db.integration;
 
+import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
 import org.apache.iotdb.jdbc.Config;
@@ -27,6 +28,7 @@ import org.apache.iotdb.rpc.RpcTransportFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -36,6 +38,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 
+@Category({StandaloneTest.class})
 public class IoTDBRpcCompressionIT {
   boolean rpcThriftCompression =
       IoTDBDescriptor.getInstance().getConfig().isRpcThriftCompressionEnable();

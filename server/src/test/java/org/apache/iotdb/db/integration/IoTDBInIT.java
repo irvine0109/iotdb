@@ -18,13 +18,15 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.base.category.ClusterTest;
+import org.apache.iotdb.base.category.StandaloneTest;
+import org.apache.iotdb.integration.env.EnvUtil;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import java.util.Map;
 
 import static org.junit.Assert.fail;
 
+@Category({StandaloneTest.class, ClusterTest.class})
 public class IoTDBInIT {
 
   private static String[] sqls =
@@ -58,22 +61,18 @@ public class IoTDBInIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+    EnvUtil.init();
 
     importData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
+    EnvUtil.clean();
   }
 
   private static void importData() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : sqls) {
@@ -90,10 +89,7 @@ public class IoTDBInIT {
   public void selectWithStarTest1() throws ClassNotFoundException {
     String[] retArray = new String[] {"1509465720000,qrcode003,qrcode002,"};
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -137,10 +133,7 @@ public class IoTDBInIT {
   public void selectWithStarTest2() throws ClassNotFoundException {
     String[] retArray = new String[] {"1509465780000,qrcode004,qrcode003,qrcode002,"};
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -192,10 +185,7 @@ public class IoTDBInIT {
           "1509465900000,root.sg.d2.s1,qrcode004,",
         };
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(

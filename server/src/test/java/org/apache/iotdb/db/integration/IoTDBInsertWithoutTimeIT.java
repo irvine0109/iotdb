@@ -19,16 +19,17 @@
 
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.base.category.ClusterTest;
+import org.apache.iotdb.base.category.StandaloneTest;
+import org.apache.iotdb.integration.env.EnvUtil;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -37,22 +38,22 @@ import java.util.List;
 import java.util.Objects;
 
 /** @Author: Architect @Date: 2021-07-13 16:32 */
+@Category({StandaloneTest.class, ClusterTest.class})
 public class IoTDBInsertWithoutTimeIT {
   private static List<String> sqls = new ArrayList<>();
   private static Connection connection;
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
+    EnvUtil.init();
     initCreateSQLStatement();
-    EnvironmentUtils.envSetUp();
     insertData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
     close();
-    EnvironmentUtils.cleanEnv();
+    EnvUtil.clean();
   }
 
   private static void close() {
@@ -72,9 +73,7 @@ public class IoTDBInsertWithoutTimeIT {
   }
 
   private static void insertData() throws ClassNotFoundException, SQLException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    connection =
-        DriverManager.getConnection(Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    connection = EnvUtil.getConnection();
     Statement statement = connection.createStatement();
 
     for (String sql : sqls) {

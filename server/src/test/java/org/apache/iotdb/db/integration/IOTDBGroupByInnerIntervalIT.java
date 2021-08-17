@@ -18,19 +18,23 @@
  */
 package org.apache.iotdb.db.integration;
 
+import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.integration.env.EnvUtil;
 import org.apache.iotdb.jdbc.Config;
 import org.apache.iotdb.jdbc.IoTDBSQLException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.*;
 
 import static org.apache.iotdb.db.constant.TestConstant.*;
 import static org.junit.Assert.*;
 
+@Category({StandaloneTest.class})
 public class IOTDBGroupByInnerIntervalIT {
 
   private static String[] dataSet1 =
@@ -123,8 +127,7 @@ public class IOTDBGroupByInnerIntervalIT {
       {26.0, 3.0, 90.9, 30.3}
     };
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -166,8 +169,7 @@ public class IOTDBGroupByInnerIntervalIT {
       {26.0, 3.0, 90.9, 30.3}
     };
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -237,8 +239,7 @@ public class IOTDBGroupByInnerIntervalIT {
       {26.0, 3.0, 90.9, 30.3}
     };
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -280,8 +281,7 @@ public class IOTDBGroupByInnerIntervalIT {
   @Test
   public void negativeOrZeroTimeInterval() {
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -310,8 +310,7 @@ public class IOTDBGroupByInnerIntervalIT {
   @Test
   public void slidingStepLessThanTimeInterval() {
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -325,9 +324,7 @@ public class IOTDBGroupByInnerIntervalIT {
   }
 
   private void prepareData() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : dataSet1) {

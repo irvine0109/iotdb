@@ -18,52 +18,56 @@
  */
 package org.apache.iotdb.db.integration;
 
+import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.engine.StorageEngine;
 import org.apache.iotdb.db.engine.storagegroup.TsFileResource;
 import org.apache.iotdb.db.exception.StorageEngineException;
 import org.apache.iotdb.db.exception.metadata.IllegalPathException;
 import org.apache.iotdb.db.metadata.PartialPath;
-import org.apache.iotdb.db.utils.EnvironmentUtils;
 import org.apache.iotdb.db.utils.FilePathUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvUtil;
 import org.apache.iotdb.tsfile.utils.Pair;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Objects;
 
+@Category({StandaloneTest.class})
 public class IoTDBFilePathUtilsIT {
 
-  private static Connection connection;
   private static final Logger logger = LoggerFactory.getLogger(IoTDBFilePathUtilsIT.class);
 
   @BeforeClass
-  public static void setUp() {
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+  public static void setUp() throws InterruptedException {
+    EnvUtil.init();
+  }
+
+  @AfterClass
+  public static void tearDown() throws Exception {
+    EnvUtil.clean();
   }
 
   private void insertData() throws ClassNotFoundException, SQLException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    connection =
-        DriverManager.getConnection(Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
-    Statement statement = connection.createStatement();
+    try (Connection connection = EnvUtil.getConnection();
+        Statement statement = connection.createStatement()) {
 
-    statement.execute("insert into root.sg1.wf01.wt01(timestamp, status) values (1000, true)");
-    statement.execute("insert into root.sg1.wf01.wt01(timestamp, status) values (2000, true)");
-    statement.execute("insert into root.sg1.wf01.wt01(timestamp, status) values (3000, true)");
-    statement.execute("flush");
-    statement.close();
+      statement.execute("insert into root.sg1.wf01.wt01(timestamp, status) values (1000, true)");
+      statement.execute("insert into root.sg1.wf01.wt01(timestamp, status) values (2000, true)");
+      statement.execute("insert into root.sg1.wf01.wt01(timestamp, status) values (3000, true)");
+      statement.execute("flush");
+
+    } catch (SQLException e) {
+      Assert.fail(e.getMessage());
+    }
   }
 
   @Test
@@ -90,21 +94,5 @@ public class IoTDBFilePathUtilsIT {
           FilePathUtils.getLogicalSgNameAndTimePartitionIdPair(tsFileResource);
       Assert.assertEquals(storageGroupName, logicalSgNameAndTimePartitionIdPair.left);
     }
-  }
-
-  private static void close() {
-    if (Objects.nonNull(connection)) {
-      try {
-        connection.close();
-      } catch (Exception e) {
-        logger.error("close the connection failed,", e);
-      }
-    }
-  }
-
-  @AfterClass
-  public static void tearDown() throws Exception {
-    close();
-    EnvironmentUtils.cleanEnv();
   }
 }

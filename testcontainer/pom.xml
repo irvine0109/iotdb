@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>testcontainer</artifactId>
     <properties>
-        <docker.test.skip>false</docker.test.skip>
+        <docker.test.skip>true</docker.test.skip>
         <docker.build.executable>docker</docker.build.executable>
         <docker.build.single.argument>build -t apache/iotdb:maven-development -f ${basedir}/../docker/src/main/Dockerfile-single ${basedir}/../.</docker.build.single.argument>
         <docker.clean.single.argument>image rm apache/iotdb:maven-development</docker.clean.single.argument>
@@ -41,13 +41,11 @@
             <groupId>org.apache.iotdb</groupId>
             <artifactId>iotdb-jdbc</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.iotdb</groupId>
             <artifactId>iotdb-session</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.iotdb</groupId>

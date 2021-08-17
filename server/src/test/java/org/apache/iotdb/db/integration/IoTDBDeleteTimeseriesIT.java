@@ -19,18 +19,20 @@
 
 package org.apache.iotdb.db.integration;
 
+import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.engine.compaction.CompactionStrategy;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.integration.env.EnvUtil;
 import org.apache.iotdb.jdbc.Config;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
@@ -39,6 +41,7 @@ import static org.apache.iotdb.db.constant.TestConstant.TIMESTAMP_STR;
 import static org.apache.iotdb.db.constant.TestConstant.count;
 import static org.junit.Assert.fail;
 
+@Category({StandaloneTest.class})
 public class IoTDBDeleteTimeseriesIT {
 
   private long memtableSizeThreshold;
@@ -69,8 +72,7 @@ public class IoTDBDeleteTimeseriesIT {
     String[] retArray = new String[] {"1,1,", "2,1.1,"};
     int cnt = 0;
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(
           "create timeseries root.turbine1.d1.s1 with datatype=INT64, encoding=PLAIN, compression=SNAPPY");
@@ -113,9 +115,7 @@ public class IoTDBDeleteTimeseriesIT {
 
     EnvironmentUtils.restartDaemon();
 
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResult = statement.execute("SELECT * FROM root");
       Assert.assertTrue(hasResult);
@@ -127,8 +127,7 @@ public class IoTDBDeleteTimeseriesIT {
     String[] retArray = new String[] {"1,1,", "2,5,"};
     int cnt = 0;
 
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(
           "create timeseries root.turbine1.d1.s1 with datatype=INT64, encoding=PLAIN, compression=SNAPPY");
@@ -171,9 +170,7 @@ public class IoTDBDeleteTimeseriesIT {
 
     EnvironmentUtils.restartDaemon();
 
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResult = statement.execute("SELECT * FROM root");
       Assert.assertTrue(hasResult);
@@ -186,8 +183,7 @@ public class IoTDBDeleteTimeseriesIT {
 
     int preAvgSeriesPointNumberThreshold =
         IoTDBDescriptor.getInstance().getConfig().getAvgSeriesPointNumberThreshold();
-    try (Connection connection =
-            DriverManager.getConnection("jdbc:iotdb://127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvUtil.getConnection();
         Statement statement = connection.createStatement()) {
 
       IoTDBDescriptor.getInstance().getConfig().setAvgSeriesPointNumberThreshold(2);
