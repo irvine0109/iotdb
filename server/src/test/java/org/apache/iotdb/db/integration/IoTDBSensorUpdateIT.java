@@ -18,40 +18,41 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBSensorUpdateIT {
 
   @Before
   public void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+    EnvFactory.getEnv().initBeforeClass();
     Class.forName(Config.JDBC_DRIVER_NAME);
   }
 
   @After
   public void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   @Test
   public void testMerge() throws SQLException, InterruptedException {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("set storage group to root.demo");
       statement.execute("create timeseries root.demo.d1.s1 with datatype=INT64,encoding=RLE");
@@ -80,6 +81,9 @@ public class IoTDBSensorUpdateIT {
         }
         assertEquals(1, cnt);
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 }

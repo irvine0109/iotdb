@@ -18,16 +18,16 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.constant.TestConstant;
 import org.apache.iotdb.db.engine.storagegroup.virtualSg.HashVirtualPartitioner;
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.*;
 
@@ -35,21 +35,19 @@ import java.sql.*;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
+@Category({LocalStandaloneTest.class})
 public class IoTDBCompleteIT {
 
   @Before
-  public void setUp() {
+  public void setUp() throws InterruptedException {
     // test different partition
     HashVirtualPartitioner.getInstance().setStorageGroupNum(16);
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+    EnvFactory.getEnv().initBeforeClass();
   }
 
   @After
   public void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
-    HashVirtualPartitioner.getInstance()
-        .setStorageGroupNum(IoTDBDescriptor.getInstance().getConfig().getVirtualStorageGroupNum());
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   @Test
@@ -428,10 +426,7 @@ public class IoTDBCompleteIT {
   }
 
   private void executeSQL(String[] sqls) throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String result = "";
       Long now_start = 0L;

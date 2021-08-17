@@ -22,8 +22,8 @@ package org.apache.iotdb.db.integration;
 import org.apache.iotdb.db.exception.metadata.MetadataException;
 import org.apache.iotdb.db.metadata.PartialPath;
 import org.apache.iotdb.db.service.IoTDB;
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
@@ -31,9 +31,9 @@ import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -45,6 +45,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+@Category({LocalStandaloneTest.class})
 public class IoTDBArithmeticIT {
 
   private static final double E = 0.0001;
@@ -59,8 +60,7 @@ public class IoTDBArithmeticIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvironmentUtils.envSetUp();
-    Class.forName(Config.JDBC_DRIVER_NAME);
+    EnvFactory.getEnv().initBeforeClass();
     createTimeSeries();
     generateData();
   }
@@ -118,28 +118,25 @@ public class IoTDBArithmeticIT {
   }
 
   private static void generateData() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       for (String dataGenerationSql : INSERTION_SQLS) {
         statement.execute(dataGenerationSql);
       }
-    } catch (SQLException throwable) {
+    } catch (SQLException | ClassNotFoundException throwable) {
       fail(throwable.getMessage());
     }
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   @Test
   public void testArithmeticBinary() {
-    try (Statement statement =
-        DriverManager.getConnection(Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root")
-            .createStatement()) {
+    try (Connection connection = EnvFactory.getEnv().getConnection();
+        Statement statement = connection.createStatement()) {
 
       String[] operands = new String[] {"s1", "s2", "s3", "s4"};
       for (String operator : new String[] {" + ", " - ", " * ", " / ", " % "}) {
@@ -181,16 +178,14 @@ public class IoTDBArithmeticIT {
           }
         }
       }
-    } catch (SQLException throwable) {
+    } catch (SQLException | ClassNotFoundException throwable) {
       fail(throwable.getMessage());
     }
   }
 
   @Test
   public void testArithmeticUnary() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] expressions = new String[] {"- s1", "- s2", "- s3", "- s4"};
       String sql = String.format("select %s from root.sg.d1", String.join(",", expressions));
@@ -207,16 +202,14 @@ public class IoTDBArithmeticIT {
         }
       }
       resultSet.close();
-    } catch (SQLException throwable) {
+    } catch (SQLException | ClassNotFoundException throwable) {
       fail(throwable.getMessage());
     }
   }
 
   @Test
   public void testHybridQuery() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] expressions = new String[] {"s1", "s1 + s2", "sin(s1)"};
       String sql = String.format("select %s from root.sg.d1", String.join(",", expressions));
@@ -231,16 +224,14 @@ public class IoTDBArithmeticIT {
         assertEquals(Math.sin(i), Double.parseDouble(resultSet.getString(4)), E);
       }
       resultSet.close();
-    } catch (SQLException throwable) {
+    } catch (SQLException | ClassNotFoundException throwable) {
       fail(throwable.getMessage());
     }
   }
 
   @Test
   public void testNonAlign() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       ResultSet resultSet = statement.executeQuery("select s7 + s8 from root.sg.d1");
       assertEquals(1 + 1, resultSet.getMetaData().getColumnCount());
@@ -252,31 +243,27 @@ public class IoTDBArithmeticIT {
       assertEquals(1 + 1, resultSet.getMetaData().getColumnCount());
       assertFalse(resultSet.next());
       resultSet.close();
-    } catch (SQLException throwable) {
+    } catch (SQLException | ClassNotFoundException throwable) {
       fail(throwable.getMessage());
     }
   }
 
   @Test
   public void testWrongTypeBoolean() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.executeQuery("select s1 + s5 from root.sg.d1");
-    } catch (SQLException throwable) {
+    } catch (SQLException | ClassNotFoundException throwable) {
       assertTrue(throwable.getMessage().contains("Unsupported data type: BOOLEAN"));
     }
   }
 
   @Test
   public void testWrongTypeText() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.executeQuery("select s1 + s6 from root.sg.d1");
-    } catch (SQLException throwable) {
+    } catch (SQLException | ClassNotFoundException throwable) {
       assertTrue(throwable.getMessage().contains("Unsupported data type: TEXT"));
     }
   }

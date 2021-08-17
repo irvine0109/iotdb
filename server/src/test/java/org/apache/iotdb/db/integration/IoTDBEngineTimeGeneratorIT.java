@@ -27,6 +27,7 @@ import org.apache.iotdb.db.metadata.PartialPath;
 import org.apache.iotdb.db.qp.physical.crud.RawDataQueryPlan;
 import org.apache.iotdb.db.query.timegenerator.ServerTimeGenerator;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 import org.apache.iotdb.tsfile.common.conf.TSFileConfig;
 import org.apache.iotdb.tsfile.common.conf.TSFileDescriptor;
@@ -41,6 +42,7 @@ import org.apache.iotdb.tsfile.read.filter.factory.FilterFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -58,6 +60,7 @@ import static org.junit.Assert.fail;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
+@Category({LocalStandaloneTest.class})
 public class IoTDBEngineTimeGeneratorIT {
 
   private static TSFileConfig tsFileConfig = TSFileDescriptor.getInstance().getConfig();

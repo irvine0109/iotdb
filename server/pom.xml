@@ -31,7 +31,7 @@
     <name>IoTDB Server</name>
     <properties>
         <iotdb.test.skip>false</iotdb.test.skip>
-        <iotdb.it.skip>${iotdb.test.skip}</iotdb.it.skip>
+        <iotdb.it.skip>true</iotdb.it.skip>
         <iotdb.ut.skip>${iotdb.test.skip}</iotdb.ut.skip>
     </properties>
     <dependencies>
@@ -65,6 +65,11 @@
         <dependency>
             <groupId>org.apache.iotdb</groupId>
             <artifactId>iotdb-thrift-sync</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.iotdb</groupId>
+            <artifactId>integration-base</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

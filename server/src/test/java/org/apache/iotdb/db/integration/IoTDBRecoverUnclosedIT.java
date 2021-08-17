@@ -21,12 +21,14 @@ package org.apache.iotdb.db.integration;
 
 import org.apache.iotdb.db.exception.StartupException;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -42,6 +44,7 @@ import static org.apache.iotdb.db.constant.TestConstant.min_time;
 import static org.apache.iotdb.db.constant.TestConstant.min_value;
 import static org.junit.Assert.fail;
 
+@Category({LocalStandaloneTest.class})
 public class IoTDBRecoverUnclosedIT {
 
   private static final String TIMESTAMP_STR = "Time";

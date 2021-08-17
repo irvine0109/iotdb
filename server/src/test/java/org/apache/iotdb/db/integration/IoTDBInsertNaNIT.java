@@ -18,16 +18,17 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import static org.junit.Assert.fail;
  *
  * <p>This test stores NaN Values and retrieves them via SQL Interface.
  */
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBInsertNaNIT {
 
   private static final String CREATE_TEMPLATE_SQL =
@@ -60,15 +62,14 @@ public class IoTDBInsertNaNIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
+    EnvFactory.getEnv().initBeforeClass();
     initCreateSQLStatement();
-    EnvironmentUtils.envSetUp();
     insertData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private static void initCreateSQLStatement() {
@@ -89,10 +90,7 @@ public class IoTDBInsertNaNIT {
   }
 
   private static void insertData() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : sqls) {
@@ -105,10 +103,7 @@ public class IoTDBInsertNaNIT {
 
   @Test
   public void selectAllSQLTest() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select * from root.vehicle.*");
       Assert.assertTrue(hasResultSet);
@@ -147,9 +142,7 @@ public class IoTDBInsertNaNIT {
 
   @Test
   public void selectTest() throws ClassNotFoundException {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(
           "CREATE TIMESERIES root.happy.device1.sensor1.temperature WITH DATATYPE=DOUBLE, ENCODING=RLE");
@@ -178,9 +171,7 @@ public class IoTDBInsertNaNIT {
 
   @Test
   public void testNaNValue() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(
           String.format(INSERT_BRAND_NEW_TEMPLATE_SQL, "d0", "s0" + "2f", TIMESTAMP, VALUE));
