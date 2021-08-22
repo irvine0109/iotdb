@@ -23,12 +23,14 @@ import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.engine.compaction.CompactionStrategy;
 import org.apache.iotdb.db.qp.logical.crud.AggregationQueryOperator;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,6 +48,7 @@ import static org.apache.iotdb.db.constant.TestConstant.min_value;
 import static org.apache.iotdb.db.constant.TestConstant.sum;
 import static org.junit.Assert.fail;
 
+@Category({LocalStandaloneTest.class})
 public class IOTDBGroupByIT {
 
   private static String[] dataSet1 =

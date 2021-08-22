@@ -19,18 +19,19 @@
 package org.apache.iotdb.db.integration;
 
 import org.apache.iotdb.db.constant.TestConstant;
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.IoTDBDatabaseMetadata;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
@@ -41,6 +42,7 @@ import static org.junit.Assert.fail;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBLimitSlimitIT {
 
   private static String[] insertSqls =
@@ -83,21 +85,17 @@ public class IoTDBLimitSlimitIT {
       };
 
   @BeforeClass
-  public static void setUp() {
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+  public static void setUp() throws InterruptedException {
+    EnvFactory.getEnv().initBeforeClass();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private static void insertData() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : insertSqls) {
@@ -146,11 +144,8 @@ public class IoTDBLimitSlimitIT {
   }
 
   private void executeSQL(String[] sqls) throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
 
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String result = "";
       Long now_start = 0L;

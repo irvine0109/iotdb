@@ -19,13 +19,15 @@
 package org.apache.iotdb.db.integration;
 
 import org.apache.iotdb.db.conf.IoTDBConstant;
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.*;
 
@@ -37,6 +39,7 @@ import static org.junit.Assert.fail;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBDaemonIT {
 
   private static String[] sqls =
@@ -94,8 +97,7 @@ public class IoTDBDaemonIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+    EnvFactory.getEnv().initBeforeClass();
 
     insertData();
   }
@@ -103,14 +105,11 @@ public class IoTDBDaemonIT {
   @AfterClass
   public static void tearDown() throws Exception {
 
-    EnvironmentUtils.cleanEnv();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private static void insertData() throws ClassNotFoundException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : sqls) {
@@ -139,10 +138,7 @@ public class IoTDBDaemonIT {
           "946684800000,null,null,100,"
         };
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select s0,s0,s1 from root.vehicle.d0");
       Assert.assertTrue(hasResultSet);
@@ -177,10 +173,7 @@ public class IoTDBDaemonIT {
   public void selectWithDuplicatedColumnsTest2() throws ClassNotFoundException {
     String[] retArray = new String[] {"11,11,42988.0,11,"};
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute("select count(s0),count(s0),sum(s0),count(s1) from root.vehicle.d0");
@@ -237,10 +230,7 @@ public class IoTDBDaemonIT {
           "946684800000,null,100,null,good,null"
         };
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select * from root");
       Assert.assertTrue(hasResultSet);
@@ -294,10 +284,7 @@ public class IoTDBDaemonIT {
     String[] retArray =
         new String[] {"2,2.22", "3,3.33", "4,4.44", "102,10.0", "105,11.11", "1000,1000.11"};
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select s2 from root.vehicle.*");
       Assert.assertTrue(hasResultSet);
@@ -335,10 +322,7 @@ public class IoTDBDaemonIT {
           "105,99,199"
         };
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -369,10 +353,7 @@ public class IoTDBDaemonIT {
   public void selectAndOperatorTest() throws ClassNotFoundException {
     String[] retArray = new String[] {"1000,22222,55555,888"};
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       // TODO select s0,s1 from root.vehicle.d0 where time > 106 and root.vehicle.d1.s0 > 100;
       boolean hasResultSet =
@@ -406,10 +387,7 @@ public class IoTDBDaemonIT {
   public void selectAndOpeCrossTest() throws ClassNotFoundException {
     String[] retArray = new String[] {"1000,22222,55555"};
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -440,10 +418,7 @@ public class IoTDBDaemonIT {
   public void selectOneColumnWithFilterTest() throws ClassNotFoundException {
     String[] retArray = new String[] {"102,180", "104,190", "946684800000,100"};
 
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       boolean hasTextMaxResultSet =

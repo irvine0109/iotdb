@@ -19,14 +19,15 @@
 package org.apache.iotdb.db.integration;
 
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -35,12 +36,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+@Category({LocalStandaloneTest.class})
 public class IoTDBTagAlterIT {
 
   @Before
-  public void setUp() {
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
+  public void setUp() throws InterruptedException {
+    EnvFactory.getEnv().initBeforeClass();
   }
 
   @After
@@ -61,10 +62,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT,"
             + " encoding=RLE, compression=SNAPPY tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -166,10 +164,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -260,10 +255,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -353,10 +345,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -439,10 +428,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -529,10 +515,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");

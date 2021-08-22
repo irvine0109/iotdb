@@ -21,11 +21,13 @@ package org.apache.iotdb.db.integration;
 import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.engine.compaction.CompactionStrategy;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,6 +37,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 
+@Category({LocalStandaloneTest.class})
 public class IoTDBLevelCompactionIT {
 
   CompactionStrategy prevCompactionStrategy;

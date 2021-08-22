@@ -18,17 +18,18 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.IoTDBSQLException;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -37,25 +38,22 @@ import static org.apache.iotdb.db.constant.TestConstant.TIMESTAMP_STR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBQuotedPathIT {
 
   @Before
   public void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
-    EnvironmentUtils.envSetUp();
-    Class.forName(Config.JDBC_DRIVER_NAME);
+    EnvFactory.getEnv().initBeforeClass();
   }
 
   @After
   public void tearDown() throws Exception {
-    EnvironmentUtils.cleanEnv();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   @Test
   public void test() {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] exp =
           new String[] {
@@ -135,15 +133,16 @@ public class IoTDBQuotedPathIT {
 
   @Test
   public void testIllegalStorageGroup() throws SQLException {
-    try (Connection connection =
-            DriverManager.getConnection(
-                Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.\"ln\"");
     } catch (IoTDBSQLException e) {
       Assert.assertEquals(
           "315: The storage group name can only be characters, numbers and underscores. root.\"ln\" is not a legal path",
           e.getMessage());
+    } catch (Exception e) {
+      e.printStackTrace();
+      Assert.fail();
     }
   }
 }

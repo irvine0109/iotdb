@@ -19,16 +19,17 @@
 
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.jdbc.Config;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -40,22 +41,22 @@ import java.util.Objects;
  * @Author: Architect @Date: 2021-03-30 18:36 @Description: This class is initially intend to test
  * the issue of IOTDB-924
  */
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBInsertMultiRowIT {
   private static List<String> sqls = new ArrayList<>();
   private static Connection connection;
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvironmentUtils.closeStatMonitor();
+    EnvFactory.getEnv().initBeforeClass();
     initCreateSQLStatement();
-    EnvironmentUtils.envSetUp();
     insertData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
     close();
-    EnvironmentUtils.cleanEnv();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private static void close() {
@@ -75,9 +76,7 @@ public class IoTDBInsertMultiRowIT {
   }
 
   private static void insertData() throws ClassNotFoundException, SQLException {
-    Class.forName(Config.JDBC_DRIVER_NAME);
-    connection =
-        DriverManager.getConnection(Config.IOTDB_URL_PREFIX + "127.0.0.1:6667/", "root", "root");
+    connection = EnvFactory.getEnv().getConnection();
     Statement statement = connection.createStatement();
 
     for (String sql : sqls) {

@@ -22,6 +22,7 @@ package org.apache.iotdb.db.integration;
 
 import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 import org.apache.iotdb.jdbc.IoTDBConnection;
 import org.apache.iotdb.rpc.TSStatusCode;
@@ -29,6 +30,7 @@ import org.apache.iotdb.rpc.TSStatusCode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -38,6 +40,7 @@ import java.sql.Statement;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Category({LocalStandaloneTest.class})
 public class IoTDBTtlIT {
 
   @Before

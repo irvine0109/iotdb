@@ -58,4 +58,4 @@ jobs:
 
       - name: TestContainer
         run: |
-          mvn -B -T 4 integration-test -pl testcontainer
+          mvn -B clean verify -Dtest.port.closed=true -pl integration -am -DskipTests=true -PCluster

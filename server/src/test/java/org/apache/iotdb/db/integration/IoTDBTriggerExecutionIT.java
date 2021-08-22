@@ -26,6 +26,7 @@ import org.apache.iotdb.db.exception.metadata.MetadataException;
 import org.apache.iotdb.db.metadata.PartialPath;
 import org.apache.iotdb.db.service.IoTDB;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
@@ -34,6 +35,7 @@ import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +51,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings("squid:S2925") // enable to use Thread.sleep(long) without warnings
+@Category({LocalStandaloneTest.class})
 public class IoTDBTriggerExecutionIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(IoTDBTriggerExecutionIT.class);
