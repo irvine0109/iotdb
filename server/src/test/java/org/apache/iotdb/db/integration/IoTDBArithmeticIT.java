@@ -19,11 +19,11 @@
 
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.exception.metadata.MetadataException;
 import org.apache.iotdb.db.metadata.PartialPath;
 import org.apache.iotdb.db.service.IoTDB;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBArithmeticIT {
 
   private static final double E = 0.0001;
@@ -60,7 +60,7 @@ public class IoTDBArithmeticIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
     createTimeSeries();
     generateData();
   }
@@ -118,7 +118,7 @@ public class IoTDBArithmeticIT {
   }
 
   private static void generateData() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       for (String dataGenerationSql : INSERTION_SQLS) {
         statement.execute(dataGenerationSql);
@@ -130,12 +130,12 @@ public class IoTDBArithmeticIT {
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   @Test
   public void testArithmeticBinary() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       String[] operands = new String[] {"s1", "s2", "s3", "s4"};
@@ -185,7 +185,7 @@ public class IoTDBArithmeticIT {
 
   @Test
   public void testArithmeticUnary() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] expressions = new String[] {"- s1", "- s2", "- s3", "- s4"};
       String sql = String.format("select %s from root.sg.d1", String.join(",", expressions));
@@ -209,7 +209,7 @@ public class IoTDBArithmeticIT {
 
   @Test
   public void testHybridQuery() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] expressions = new String[] {"s1", "s1 + s2", "sin(s1)"};
       String sql = String.format("select %s from root.sg.d1", String.join(",", expressions));
@@ -231,7 +231,7 @@ public class IoTDBArithmeticIT {
 
   @Test
   public void testNonAlign() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       ResultSet resultSet = statement.executeQuery("select s7 + s8 from root.sg.d1");
       assertEquals(1 + 1, resultSet.getMetaData().getColumnCount());
@@ -250,7 +250,7 @@ public class IoTDBArithmeticIT {
 
   @Test
   public void testWrongTypeBoolean() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.executeQuery("select s1 + s5 from root.sg.d1");
     } catch (SQLException | ClassNotFoundException throwable) {
@@ -260,7 +260,7 @@ public class IoTDBArithmeticIT {
 
   @Test
   public void testWrongTypeText() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.executeQuery("select s1 + s6 from root.sg.d1");
     } catch (SQLException | ClassNotFoundException throwable) {

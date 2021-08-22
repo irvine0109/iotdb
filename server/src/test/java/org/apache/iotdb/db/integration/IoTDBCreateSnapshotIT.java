@@ -19,14 +19,14 @@
 
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.conf.IoTDBConfig;
 import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.metadata.logfile.MLogReader;
 import org.apache.iotdb.db.metadata.logfile.MLogWriter;
 import org.apache.iotdb.db.qp.physical.PhysicalPlan;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -44,25 +44,25 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBCreateSnapshotIT {
 
   private static IoTDBConfig config = IoTDBDescriptor.getInstance().getConfig();
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
     prepareData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   @Test
   public void createSnapshotTest() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       // test before creating snapshot
@@ -130,7 +130,7 @@ public class IoTDBCreateSnapshotIT {
       Assert.fail();
     }
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       checkShowTimeseries(statement);
     } catch (Exception e) {
@@ -140,7 +140,7 @@ public class IoTDBCreateSnapshotIT {
   }
 
   private static void prepareData() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       String[] creationSqls =

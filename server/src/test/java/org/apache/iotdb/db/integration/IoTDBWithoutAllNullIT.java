@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 
 import org.junit.AfterClass;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBWithoutAllNullIT {
 
   private static final String[] dataSet =

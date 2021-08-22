@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.ClusterTest;
-import org.apache.iotdb.base.category.StandaloneTest;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@Category({StandaloneTest.class, ClusterTest.class})
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBAliasIT {
 
   private static String[] sqls =
@@ -64,18 +64,18 @@ public class IoTDBAliasIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
 
     insertData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private static void insertData() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : sqls) {
@@ -91,7 +91,7 @@ public class IoTDBAliasIT {
     String[] retArray =
         new String[] {"100,10.1,20.7,", "200,15.2,22.9,", "300,30.3,25.1,", "400,50.4,28.3,"};
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select speed, temperature from root.sg.d1");
       Assert.assertTrue(hasResultSet);
@@ -126,7 +126,7 @@ public class IoTDBAliasIT {
     String[] retArray =
         new String[] {"400,root.sg.d1.speed,50.4", "400,root.sg.d1.temperature,28.3"};
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select last speed, temperature from root.sg.d1");
       Assert.assertTrue(hasResultSet);
@@ -158,7 +158,7 @@ public class IoTDBAliasIT {
           "100,10.1,10.1,20.7,", "200,15.2,15.2,22.9,", "300,30.3,30.3,25.1,", "400,50.4,50.4,28.3,"
         };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select speed, speed, s2 from root.sg.d1");
       Assert.assertTrue(hasResultSet);
@@ -195,7 +195,7 @@ public class IoTDBAliasIT {
           "400,root.sg.d1.speed,50.4", "400,root.sg.d1.s1,50.4", "400,root.sg.d1.s2,28.3"
         };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select last speed, s1, speed, s2 from root.sg.d1");
       Assert.assertTrue(hasResultSet);
@@ -224,7 +224,7 @@ public class IoTDBAliasIT {
   public void selectAggregationWithAliasTest() {
     String[] retArray = new String[] {"4,4,28.3,26.3,"};
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute("select count(speed), max_value(temperature) from root.sg.*");
@@ -264,7 +264,7 @@ public class IoTDBAliasIT {
 
     String[] retArray = {"100,80.0,", "200,81.0,", "300,82.0,", "400,83.0,"};
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute("ALTER timeseries root.sg.d2.s3 UPSERT ALIAS=powerNew");

@@ -19,9 +19,9 @@
 
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.conf.IoTDBDescriptor;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 
 import org.junit.After;
@@ -38,7 +38,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IOTDBInsertAlignedValuesIT {
   private static Connection connection;
 

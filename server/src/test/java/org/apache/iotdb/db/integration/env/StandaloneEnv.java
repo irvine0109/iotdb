@@ -18,8 +18,8 @@
  */
 package org.apache.iotdb.db.integration.env;
 
-import org.apache.iotdb.base.env.BaseEnv;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.env.BaseEnv;
 import org.apache.iotdb.jdbc.Config;
 
 import java.sql.Connection;

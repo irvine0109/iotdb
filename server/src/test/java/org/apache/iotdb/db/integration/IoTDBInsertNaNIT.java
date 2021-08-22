@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.ClusterTest;
-import org.apache.iotdb.base.category.StandaloneTest;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -45,7 +45,7 @@ import static org.junit.Assert.fail;
  *
  * <p>This test stores NaN Values and retrieves them via SQL Interface.
  */
-@Category({StandaloneTest.class, ClusterTest.class})
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBInsertNaNIT {
 
   private static final String CREATE_TEMPLATE_SQL =
@@ -62,14 +62,14 @@ public class IoTDBInsertNaNIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
     initCreateSQLStatement();
     insertData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private static void initCreateSQLStatement() {
@@ -90,7 +90,7 @@ public class IoTDBInsertNaNIT {
   }
 
   private static void insertData() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : sqls) {
@@ -103,7 +103,7 @@ public class IoTDBInsertNaNIT {
 
   @Test
   public void selectAllSQLTest() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute("select * from root.vehicle.*");
       Assert.assertTrue(hasResultSet);
@@ -142,7 +142,7 @@ public class IoTDBInsertNaNIT {
 
   @Test
   public void selectTest() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(
           "CREATE TIMESERIES root.happy.device1.sensor1.temperature WITH DATATYPE=DOUBLE, ENCODING=RLE");
@@ -171,7 +171,7 @@ public class IoTDBInsertNaNIT {
 
   @Test
   public void testNaNValue() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(
           String.format(INSERT_BRAND_NEW_TEMPLATE_SQL, "d0", "s0" + "2f", TIMESTAMP, VALUE));

@@ -18,7 +18,7 @@
  */
 package org.apache.iotdb.integration.env;
 
-import org.apache.iotdb.base.env.BaseEnv;
+import org.apache.iotdb.itbase.env.BaseEnv;
 import org.apache.iotdb.jdbc.Config;
 
 import java.sql.Connection;
@@ -36,7 +36,7 @@ public class RemoteServerEnv implements BaseEnv {
 
   @Override
   public void initBeforeClass() throws InterruptedException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.init;");
       statement.execute("DELETE STORAGE GROUP root;");
@@ -50,7 +50,16 @@ public class RemoteServerEnv implements BaseEnv {
   public void cleanAfterClass() {}
 
   @Override
-  public void initBeforeTest() throws InterruptedException {}
+  public void initBeforeTest() throws InterruptedException {
+    try (Connection connection = EnvFactory.getEnv().getConnection();
+        Statement statement = connection.createStatement()) {
+      statement.execute("SET STORAGE GROUP TO root.init;");
+      statement.execute("DELETE STORAGE GROUP root;");
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+  }
 
   @Override
   public void cleanAfterTest() {}

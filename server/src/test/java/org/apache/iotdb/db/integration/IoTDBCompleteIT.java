@@ -18,10 +18,10 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.constant.TestConstant;
 import org.apache.iotdb.db.engine.storagegroup.virtualSg.HashVirtualPartitioner;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -35,19 +35,19 @@ import java.sql.*;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBCompleteIT {
 
   @Before
   public void setUp() throws InterruptedException {
     // test different partition
     HashVirtualPartitioner.getInstance().setStorageGroupNum(16);
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
   }
 
   @After
   public void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   @Test
@@ -426,7 +426,7 @@ public class IoTDBCompleteIT {
   }
 
   private void executeSQL(String[] sqls) throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String result = "";
       Long now_start = 0L;

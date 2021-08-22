@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.IoTDBSQLException;
 
 import org.junit.After;
@@ -38,7 +38,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBDeleteStorageGroupIT {
 
   @Before
@@ -54,7 +54,7 @@ public class IoTDBDeleteStorageGroupIT {
 
   @Test
   public void testDeleteStorageGroup() throws Exception {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.ln.wf01.wt01");
       statement.execute("SET STORAGE GROUP TO root.ln.wf01.wt02");
@@ -80,7 +80,7 @@ public class IoTDBDeleteStorageGroupIT {
 
   @Test
   public void testDeleteMultipleStorageGroupWithQuote() throws Exception {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.ln1.wf01.wt01");
       statement.execute("SET STORAGE GROUP TO root.ln1.wf01.wt02");
@@ -105,7 +105,7 @@ public class IoTDBDeleteStorageGroupIT {
 
   @Test(expected = IoTDBSQLException.class)
   public void deleteNonExistStorageGroup() throws Exception {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.ln2.wf01.wt01");
       statement.execute("DELETE STORAGE GROUP root.ln2.wf01.wt02");
@@ -114,7 +114,7 @@ public class IoTDBDeleteStorageGroupIT {
 
   @Test
   public void testDeleteStorageGroupWithStar() throws Exception {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.ln3.wf01.wt01");
       statement.execute("SET STORAGE GROUP TO root.ln3.wf01.wt02");
@@ -139,7 +139,7 @@ public class IoTDBDeleteStorageGroupIT {
 
   @Test
   public void testDeleteAllStorageGroups() throws Exception {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute("SET STORAGE GROUP TO root.ln4.wf01.wt01");
       statement.execute("SET STORAGE GROUP TO root.ln4.wf01.wt02");

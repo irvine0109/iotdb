@@ -16,6 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.iotdb.base.category;
+package org.apache.iotdb.itbase.category;
 
-public interface StandaloneTest {}
+public interface ClusterTest {}

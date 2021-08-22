@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.ClusterTest;
-import org.apache.iotdb.base.category.StandaloneTest;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -36,7 +36,7 @@ import java.util.Map;
 
 import static org.junit.Assert.fail;
 
-@Category({StandaloneTest.class, ClusterTest.class})
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBInIT {
 
   private static String[] sqls =
@@ -61,18 +61,18 @@ public class IoTDBInIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
 
     importData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private static void importData() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : sqls) {
@@ -89,7 +89,7 @@ public class IoTDBInIT {
   public void selectWithStarTest1() throws ClassNotFoundException {
     String[] retArray = new String[] {"1509465720000,qrcode003,qrcode002,"};
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -133,7 +133,7 @@ public class IoTDBInIT {
   public void selectWithStarTest2() throws ClassNotFoundException {
     String[] retArray = new String[] {"1509465780000,qrcode004,qrcode003,qrcode002,"};
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -185,7 +185,7 @@ public class IoTDBInIT {
           "1509465900000,root.sg.d2.s1,qrcode004,",
         };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(

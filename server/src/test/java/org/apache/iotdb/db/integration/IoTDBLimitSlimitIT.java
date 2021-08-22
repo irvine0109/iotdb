@@ -18,10 +18,10 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.ClusterTest;
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.constant.TestConstant;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.IoTDBDatabaseMetadata;
 
 import org.junit.AfterClass;
@@ -42,7 +42,7 @@ import static org.junit.Assert.fail;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
-@Category({StandaloneTest.class, ClusterTest.class})
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBLimitSlimitIT {
 
   private static String[] insertSqls =
@@ -86,16 +86,16 @@ public class IoTDBLimitSlimitIT {
 
   @BeforeClass
   public static void setUp() throws InterruptedException {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private static void insertData() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : insertSqls) {
@@ -145,7 +145,7 @@ public class IoTDBLimitSlimitIT {
 
   private void executeSQL(String[] sqls) throws ClassNotFoundException {
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String result = "";
       Long now_start = 0L;

@@ -16,6 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.iotdb.base.category;
+package org.apache.iotdb.itbase.env;
 
-public interface ClusterTest {}
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public interface BaseEnv {
+  void initBeforeClass() throws InterruptedException;
+
+  void cleanAfterClass();
+
+  void initBeforeTest() throws InterruptedException;
+
+  void cleanAfterTest();
+
+  Connection getConnection() throws ClassNotFoundException, SQLException;
+}

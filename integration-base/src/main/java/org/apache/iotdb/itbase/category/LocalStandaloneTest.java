@@ -16,19 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.iotdb.base.env;
+package org.apache.iotdb.itbase.category;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-public interface BaseEnv {
-  void initBeforeClass() throws InterruptedException;
-
-  void cleanAfterClass();
-
-  void initBeforeTest() throws InterruptedException;
-
-  void cleanAfterTest();
-
-  Connection getConnection() throws ClassNotFoundException, SQLException;
-}
+public interface LocalStandaloneTest {}

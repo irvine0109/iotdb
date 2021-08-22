@@ -19,9 +19,9 @@
 
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.constant.TestConstant;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 import org.apache.iotdb.jdbc.IoTDBSQLException;
 
@@ -47,7 +47,7 @@ import java.util.Set;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBAutoCreateSchemaIT {
   private Statement statement;
   private Connection connection;

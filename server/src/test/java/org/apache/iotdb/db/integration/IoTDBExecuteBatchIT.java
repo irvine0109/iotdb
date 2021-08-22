@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -35,7 +35,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBExecuteBatchIT {
   @Before
   public void setUp() throws Exception {
@@ -49,7 +49,7 @@ public class IoTDBExecuteBatchIT {
 
   @Test
   public void testJDBCExecuteBatch() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.setFetchSize(5);
       statement.addBatch(
@@ -78,7 +78,7 @@ public class IoTDBExecuteBatchIT {
 
   @Test
   public void testJDBCExecuteBatchForCreateMultiTimeSeriesPlan() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.setFetchSize(100);
       statement.addBatch(

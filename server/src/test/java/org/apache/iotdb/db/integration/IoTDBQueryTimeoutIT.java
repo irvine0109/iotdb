@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.ClusterTest;
-import org.apache.iotdb.base.category.StandaloneTest;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.IoTDBSQLException;
 import org.apache.iotdb.jdbc.IoTDBStatement;
 
@@ -37,18 +37,18 @@ import java.sql.Statement;
 
 import static org.junit.Assert.fail;
 
-@Category({StandaloneTest.class, ClusterTest.class})
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBQueryTimeoutIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
     prepareData();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   /** Test show query processlist, there is supposed to no result. */
@@ -56,7 +56,7 @@ public class IoTDBQueryTimeoutIT {
   public void queryProcessListTest() {
     String headerResult = "Time, queryId, statement, ";
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       boolean hasResultSet = statement.execute("show query processlist");
@@ -87,7 +87,7 @@ public class IoTDBQueryTimeoutIT {
    */
   @Test
   public void queryWithTimeoutTest() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.setFetchSize(40000);
@@ -107,7 +107,7 @@ public class IoTDBQueryTimeoutIT {
   /** Test executing query after a timeout query, it's supposed to execute correctly. */
   @Test
   public void queryAfterTimeoutQueryTest() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.setFetchSize(40000);
@@ -132,7 +132,7 @@ public class IoTDBQueryTimeoutIT {
   }
 
   private static void prepareData() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (int i = 0; i <= 80000; i++) {

@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 
 import org.junit.After;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBTagIT {
 
   @Before
@@ -64,7 +64,7 @@ public class IoTDBTagIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -117,7 +117,7 @@ public class IoTDBTagIT {
         "create timeseries root.turbine.d2.s2(status) with datatype=INT32, encoding=RLE "
             + "tags(tag2=t2, tag3=t3) attributes(attr3=a3, attr4=a4)";
     Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql1);
       statement.execute(sql2);
@@ -172,7 +172,7 @@ public class IoTDBTagIT {
         "create timeseries root.turbine.d2.s2(status) with datatype=INT32, encoding=RLE "
             + "tags(tag2=t2, tag3=t3) attributes(attr3=a3, attr4=a4)";
     Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql1);
       statement.execute(sql2);
@@ -220,7 +220,7 @@ public class IoTDBTagIT {
         "create timeseries root.turbine.d3.s2(temperature) with datatype=INT32, encoding=RLE "
             + "tags(tag2=t2, tag3=t3) attributes(attr3=a3, attr4=a4)";
     Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql1);
       try {
@@ -246,7 +246,7 @@ public class IoTDBTagIT {
         "create timeseries root.turbine.d4.temperature with datatype=INT32, encoding=RLE "
             + "tags(tag2=t2, tag3=t3) attributes(attr3=a3, attr4=a4)";
     Class.forName(Config.JDBC_DRIVER_NAME);
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql1);
       try {
@@ -269,7 +269,7 @@ public class IoTDBTagIT {
     String sql2 =
         "create timeseries root.turbine.d5.s2(s1) with datatype=INT32, encoding=RLE "
             + "tags(tag2=t2, tag3=t3) attributes(attr3=a3, attr4=a4)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql1);
       try {
@@ -294,7 +294,7 @@ public class IoTDBTagIT {
     String sql =
         "create timeseries root.turbine.d6.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries root.turbine.d6.temperature");
@@ -337,7 +337,7 @@ public class IoTDBTagIT {
                 + "{\"tag1\":\"v1\",\"tag2\":\"v2\"},{\"attr2\":\"v2\",\"attr1\":\"v1\"}",
             "root.turbine.d1.s3,temperature3,root.turbine,FLOAT,RLE,SNAPPY,"
                 + "{\"tag1\":\"v1\",\"tag2\":\"v2\"},{\"attr2\":\"v2\",\"attr1\":\"v1\"}");
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(
           "create timeseries root.turbine.d1.s1(temperature1) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
@@ -401,7 +401,7 @@ public class IoTDBTagIT {
     String sql2 =
         "create timeseries root.turbine.d7.s2(status) with datatype=INT32, encoding=RLE "
             + "tags(tag2=t2, tag3=t3) attributes(attr3=a3, attr4=a4)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql1);
       statement.execute(sql2);
@@ -486,7 +486,7 @@ public class IoTDBTagIT {
     String sql2 =
         "create timeseries root.turbine.d7.s2(status) with datatype=INT32, encoding=RLE "
             + "tags(tag2=t2, tag3=t3) attributes(attr3=a3, attr4=a4)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql1);
       statement.execute(sql2);
@@ -603,7 +603,7 @@ public class IoTDBTagIT {
       "create timeseries root.ln.d1.s0(status) with datatype=INT32, encoding=RLE "
           + "tags(description='ln this is a test3') attributes(H_Alarm=90, M_Alarm=50)",
     };
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       for (String sql : sqls) {
         statement.execute(sql);
@@ -699,7 +699,7 @@ public class IoTDBTagIT {
       "create timeseries root.ln.d1.s0(status) with datatype=INT32, encoding=RLE "
           + "tags(description='ln this is a test3') attributes(H_Alarm=90, M_Alarm=50)",
     };
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       for (String sql : sqls) {
         statement.execute(sql);
@@ -812,7 +812,7 @@ public class IoTDBTagIT {
       "create timeseries root.ln.d1.s0(status) with datatype=INT32, encoding=RLE "
           + "tags(description='ln this is a test3') attributes(H_Alarm=90, M_Alarm=50)",
     };
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       for (String sql : sqls) {
         statement.execute(sql);
@@ -895,7 +895,7 @@ public class IoTDBTagIT {
       "create timeseries root.ln.d1.s0(status) with datatype=INT32, encoding=RLE "
           + "tags(description='ln this is a test3') attributes(H_Alarm=90, M_Alarm=50)",
     };
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       for (String sql : sqls) {
         statement.execute(sql);
@@ -990,7 +990,7 @@ public class IoTDBTagIT {
       "create timeseries root.ln.d1.s0(status) with datatype=INT32, encoding=RLE "
           + "tags(description='ln this is a test3') attributes(H_Alarm=90, M_Alarm=50)",
     };
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       for (String sql : sqls) {
         statement.execute(sql);
@@ -1013,7 +1013,7 @@ public class IoTDBTagIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(tag1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       fail();
@@ -1032,7 +1032,7 @@ public class IoTDBTagIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -1082,7 +1082,7 @@ public class IoTDBTagIT {
       "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY",
       "insert into root.turbine.d1(timestamp, temperature) values(1,36.5)"
     };
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       for (String sql : sqls) {
         statement.execute(sql);

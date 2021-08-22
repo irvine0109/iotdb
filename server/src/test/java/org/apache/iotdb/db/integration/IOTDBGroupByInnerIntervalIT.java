@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 import org.apache.iotdb.jdbc.IoTDBSQLException;
 
@@ -34,7 +34,7 @@ import java.sql.*;
 import static org.apache.iotdb.db.constant.TestConstant.*;
 import static org.junit.Assert.*;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IOTDBGroupByInnerIntervalIT {
 
   private static String[] dataSet1 =
@@ -127,7 +127,7 @@ public class IOTDBGroupByInnerIntervalIT {
       {26.0, 3.0, 90.9, 30.3}
     };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -169,7 +169,7 @@ public class IOTDBGroupByInnerIntervalIT {
       {26.0, 3.0, 90.9, 30.3}
     };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -239,7 +239,7 @@ public class IOTDBGroupByInnerIntervalIT {
       {26.0, 3.0, 90.9, 30.3}
     };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -281,7 +281,7 @@ public class IOTDBGroupByInnerIntervalIT {
   @Test
   public void negativeOrZeroTimeInterval() {
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -310,7 +310,7 @@ public class IOTDBGroupByInnerIntervalIT {
   @Test
   public void slidingStepLessThanTimeInterval() {
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet =
           statement.execute(
@@ -324,7 +324,7 @@ public class IOTDBGroupByInnerIntervalIT {
   }
 
   private void prepareData() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : dataSet1) {

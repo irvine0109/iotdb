@@ -18,10 +18,10 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.constant.TestConstant;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -43,7 +43,7 @@ import static org.junit.Assert.fail;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBInsertWithQueryIT {
 
   @Before
@@ -441,7 +441,7 @@ public class IoTDBInsertWithQueryIT {
   }
 
   private void insertData(int start, int end) throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       // insert of data time range : start-end into fans
       for (int time = start; time < end; time++) {
@@ -458,7 +458,7 @@ public class IoTDBInsertWithQueryIT {
   }
 
   private void flush() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       // insert of data time range : start-end into fans
       statement.execute("flush");
@@ -471,7 +471,7 @@ public class IoTDBInsertWithQueryIT {
   private void selectAndCount(int res) throws ClassNotFoundException {
     String selectSql = "select * from root";
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute(selectSql);
       Assert.assertTrue(hasResultSet);
@@ -498,7 +498,7 @@ public class IoTDBInsertWithQueryIT {
   private void select() throws ClassNotFoundException {
     String selectSql = "select * from root";
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       boolean hasResultSet = statement.execute(selectSql);
       Assert.assertTrue(hasResultSet);

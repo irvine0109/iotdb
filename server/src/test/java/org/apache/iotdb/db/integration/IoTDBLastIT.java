@@ -18,13 +18,13 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.metadata.PartialPath;
 import org.apache.iotdb.db.metadata.mnode.IMNode;
 import org.apache.iotdb.db.metadata.mnode.IMeasurementMNode;
 import org.apache.iotdb.db.service.IoTDB;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -42,7 +42,7 @@ import java.util.Set;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBLastIT {
 
   private static final String[] dataSet1 =
@@ -112,7 +112,7 @@ public class IoTDBLastIT {
           "root.ln.wf02.status,true",
         };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute(
@@ -158,7 +158,7 @@ public class IoTDBLastIT {
                 "300,root.ln.wf01.wt03.temperature,23.1",
                 "300,root.ln.wf01.wt03.id,8"));
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       boolean hasResultSet = statement.execute("select last * from root.* order by time desc");
@@ -197,7 +197,7 @@ public class IoTDBLastIT {
           "700,root.ln.wf01.wt01.id,3"
         };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       boolean hasResultSet =
@@ -285,7 +285,7 @@ public class IoTDBLastIT {
           "600,root.ln.wf01.wt02.id,6"
         };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       IMNode node =
@@ -371,7 +371,7 @@ public class IoTDBLastIT {
   public void lastWithEmptyChunkMetadataTest() {
     String[] retArray = new String[] {"300,root.ln.wf01.wt03.temperature,23.1"};
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       IMNode node =
@@ -411,7 +411,7 @@ public class IoTDBLastIT {
   public void lastWithUnseqTimeLargerThanSeqTimeTest() {
     String[] retArray = new String[] {"150,root.ln.wf01.wt04.temperature,31.2"};
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute(
@@ -459,7 +459,7 @@ public class IoTDBLastIT {
           "350,root.ln.wf01.wt05.temperature,31.2", "200,root.ln.wf01.wt05.temperature,78.2"
         };
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute(
@@ -514,7 +514,7 @@ public class IoTDBLastIT {
   public void lastWithFilterTest() {
     String[] retArray = new String[] {"500,root.ln.wf01.wt01.temperature,22.1"};
 
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute("select last temperature from root.ln.wf01.wt01");
@@ -553,7 +553,7 @@ public class IoTDBLastIT {
   }
 
   private void prepareData() {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : dataSet1) {

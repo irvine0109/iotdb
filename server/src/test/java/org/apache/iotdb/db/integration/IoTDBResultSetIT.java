@@ -19,9 +19,9 @@
 
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.ClusterTest;
-import org.apache.iotdb.base.category.StandaloneTest;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -45,14 +45,14 @@ import static org.junit.Assert.fail;
  * @description your description
  * @time 27/9/20 22:56
  */
-@Category({StandaloneTest.class, ClusterTest.class})
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBResultSetIT {
   private static List<String> sqls = new ArrayList<>();
   private static Connection connection;
 
   @BeforeClass
   public static void setUp() throws Exception {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
     initCreateSQLStatement();
     insertData();
   }
@@ -60,7 +60,7 @@ public class IoTDBResultSetIT {
   @AfterClass
   public static void tearDown() throws Exception {
     close();
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private static void close() {
@@ -82,7 +82,7 @@ public class IoTDBResultSetIT {
   }
 
   private static void insertData() throws ClassNotFoundException, SQLException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : sqls) {
@@ -96,7 +96,7 @@ public class IoTDBResultSetIT {
 
   @Test
   public void testIntAndLongConversion() throws SQLException {
-    try (Connection connection = EnvUtil.getConnection()) {
+    try (Connection connection = EnvFactory.getEnv().getConnection()) {
       Statement st0 = connection.createStatement();
       st0.execute(
           "insert into root.t1.wf01.wt01(timestamp, status, type, grade) values (1000, true, 1, 1000)");

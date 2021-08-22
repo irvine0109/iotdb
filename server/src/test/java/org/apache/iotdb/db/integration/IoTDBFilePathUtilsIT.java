@@ -18,14 +18,14 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.engine.StorageEngine;
 import org.apache.iotdb.db.engine.storagegroup.TsFileResource;
 import org.apache.iotdb.db.exception.StorageEngineException;
 import org.apache.iotdb.db.exception.metadata.IllegalPathException;
 import org.apache.iotdb.db.metadata.PartialPath;
 import org.apache.iotdb.db.utils.FilePathUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.tsfile.utils.Pair;
 
 import org.junit.AfterClass;
@@ -41,23 +41,23 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBFilePathUtilsIT {
 
   private static final Logger logger = LoggerFactory.getLogger(IoTDBFilePathUtilsIT.class);
 
   @BeforeClass
   public static void setUp() throws InterruptedException {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   private void insertData() throws ClassNotFoundException, SQLException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       statement.execute("insert into root.sg1.wf01.wt01(timestamp, status) values (1000, true)");

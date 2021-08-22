@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.ClusterTest;
-import org.apache.iotdb.base.category.StandaloneTest;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.ClusterTest;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.IoTDBConnection;
 
 import org.apache.thrift.TException;
@@ -37,7 +37,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.fail;
 
-@Category({StandaloneTest.class, ClusterTest.class})
+@Category({LocalStandaloneTest.class, ClusterTest.class})
 public class IoTDBTimeZoneIT {
 
   private static String[] insertSqls =
@@ -68,13 +68,13 @@ public class IoTDBTimeZoneIT {
 
   @Before
   public void setUp() throws Exception {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
     createTimeseries();
   }
 
   @After
   public void tearDown() throws Exception {
-    EnvUtil.clean();
+    EnvFactory.getEnv().cleanAfterClass();
   }
 
   /**
@@ -99,7 +99,7 @@ public class IoTDBTimeZoneIT {
    */
   @Test
   public void timezoneTest() throws ClassNotFoundException, SQLException, TException {
-    try (IoTDBConnection connection = (IoTDBConnection) EnvUtil.getConnection();
+    try (IoTDBConnection connection = (IoTDBConnection) EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       String insertSQLTemplate = "insert into root.timezone(timestamp,tz1) values(%s,%s)";
@@ -143,7 +143,7 @@ public class IoTDBTimeZoneIT {
   }
 
   private void createTimeseries() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       for (String sql : insertSqls) {

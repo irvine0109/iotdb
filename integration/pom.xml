@@ -64,7 +64,7 @@
         </dependency>
     </dependencies>
     <properties>
-        <docker.test.skip>false</docker.test.skip>
+        <docker.test.skip>true</docker.test.skip>
         <docker.build.executable>docker</docker.build.executable>
         <docker.build.single.argument>build -t apache/iotdb:maven-development -f ${basedir}/../docker/src/main/Dockerfile-single ${basedir}/../.</docker.build.single.argument>
         <docker.clean.single.argument>image rm apache/iotdb:maven-development</docker.clean.single.argument>
@@ -73,13 +73,13 @@
     </properties>
     <profiles>
         <profile>
-            <id>Standalone</id>
+            <id>LocalStandalone</id>
             <properties>
-                <test.includedGroups>org.apache.iotdb.base.category.StandaloneTest</test.includedGroups>
+                <test.includedGroups>org.apache.iotdb.itbase.category.LocalStandaloneTest</test.includedGroups>
                 <test.excludedGroups/>
             </properties>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <build>
                 <plugins>
@@ -111,7 +111,6 @@
                                     <sources>
                                         <source>${basedir}/../testcontainer/src/test/java</source>
                                         <source>${basedir}/../server/src/test/java/org/apache/iotdb/db/integration</source>
-                                        <!--<source>${basedir}/../server/src/test/java</source>-->
                                     </sources>
                                 </configuration>
                             </execution>
@@ -138,7 +137,7 @@
                                     <systemPropertyVariables>
                                         <TestEnv>Standalone</TestEnv>
                                     </systemPropertyVariables>
-                                    <summaryFile>target/failsafe-reports/failsafe-summary-Standalone.xml</summaryFile>
+                                    <summaryFile>target/failsafe-reports/failsafe-summary-LocalStandalone.xml</summaryFile>
                                 </configuration>
                             </execution>
                             <execution>
@@ -148,7 +147,7 @@
                                 </goals>
                                 <configuration>
                                     <summaryFiles>
-                                        <summaryFile>target/failsafe-reports/failsafe-summary-Standalone.xml</summaryFile>
+                                        <summaryFile>target/failsafe-reports/failsafe-summary-LocalStandalone.xml</summaryFile>
                                     </summaryFiles>
                                 </configuration>
                             </execution>
@@ -160,7 +159,7 @@
         <profile>
             <id>Cluster</id>
             <properties>
-                <test.includedGroups>org.apache.iotdb.base.category.ClusterTest</test.includedGroups>
+                <test.includedGroups>org.apache.iotdb.itbase.category.ClusterTest</test.includedGroups>
                 <test.excludedGroups/>
             </properties>
             <activation>
@@ -267,6 +266,8 @@
                                     <goal>integration-test</goal>
                                 </goals>
                                 <configuration>
+                                    <skipTests>false</skipTests>
+                                    <skipITs>false</skipITs>
                                     <testSourceDirectory>${basedir}/../testcontainer/src/test/java</testSourceDirectory>
                                     <testSourceDirectory>${basedir}/../server/src/test/java/org/apache/iotdb/db/integration</testSourceDirectory>
                                     <groups>${test.includedGroups}</groups>
@@ -324,7 +325,7 @@
         <profile>
             <id>Remote</id>
             <properties>
-                <test.includedGroups>org.apache.iotdb.base.category.ClusterTest</test.includedGroups>
+                <test.includedGroups>org.apache.iotdb.itbase.category.ClusterTest</test.includedGroups>
                 <test.excludedGroups/>
             </properties>
             <activation>
@@ -358,9 +359,8 @@
                                 </goals>
                                 <configuration>
                                     <sources>
-                                        <!--                                        <source>${basedir}/../testcontainer/src/test/java</source>-->
+                                        <source>${basedir}/../testcontainer/src/test/java</source>
                                         <source>${basedir}/../server/src/test/java/org/apache/iotdb/db/integration</source>
-                                        <!--<source>${basedir}/../server/src/test/java</source>-->
                                     </sources>
                                 </configuration>
                             </execution>
@@ -376,7 +376,9 @@
                                     <goal>integration-test</goal>
                                 </goals>
                                 <configuration>
-                                    <!--                                    <testSourceDirectory>${basedir}/../testcontainer/src/test/java</testSourceDirectory>-->
+                                    <skipTests>false</skipTests>
+                                    <skipITs>false</skipITs>
+                                    <testSourceDirectory>${basedir}/../testcontainer/src/test/java</testSourceDirectory>
                                     <testSourceDirectory>${basedir}/../server/src/test/java</testSourceDirectory>
                                     <groups>${test.includedGroups}</groups>
                                     <excludedGroups>${test.excludedGroups}</excludedGroups>

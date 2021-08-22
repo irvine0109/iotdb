@@ -18,9 +18,9 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,12 +36,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBTagAlterIT {
 
   @Before
   public void setUp() throws InterruptedException {
-    EnvUtil.init();
+    EnvFactory.getEnv().initBeforeClass();
   }
 
   @After
@@ -62,7 +62,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT,"
             + " encoding=RLE, compression=SNAPPY tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -164,7 +164,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -255,7 +255,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -345,7 +345,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -428,7 +428,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");
@@ -515,7 +515,7 @@ public class IoTDBTagAlterIT {
     String sql =
         "create timeseries root.turbine.d1.s1(temperature) with datatype=FLOAT, encoding=RLE, compression=SNAPPY "
             + "tags(tag1=v1, tag2=v2) attributes(attr1=v1, attr2=v2)";
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(sql);
       boolean hasResult = statement.execute("show timeseries");

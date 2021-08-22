@@ -18,10 +18,10 @@
  */
 package org.apache.iotdb.db.integration;
 
-import org.apache.iotdb.base.category.StandaloneTest;
 import org.apache.iotdb.db.conf.IoTDBConstant;
 import org.apache.iotdb.db.utils.EnvironmentUtils;
-import org.apache.iotdb.integration.env.EnvUtil;
+import org.apache.iotdb.integration.env.EnvFactory;
+import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -48,14 +48,14 @@ import static org.junit.Assert.fail;
  * Notice that, all test begins with "IoTDB" is integration test. All test which will start the
  * IoTDB server should be defined as integration test.
  */
-@Category({StandaloneTest.class})
+@Category({LocalStandaloneTest.class})
 public class IoTDBMetadataFetchIT {
 
   private DatabaseMetaData databaseMetaData;
   private static final Logger logger = LoggerFactory.getLogger(IoTDBMetadataFetchIT.class);
 
   private static void insertSQL() throws ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       String[] insertSqls =
@@ -92,7 +92,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showTimeseriesTest() throws ClassNotFoundException, SQLException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
 
       String[] sqls =
@@ -149,7 +149,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showStorageGroupTest() throws ClassNotFoundException, SQLException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls =
           new String[] {
@@ -194,7 +194,7 @@ public class IoTDBMetadataFetchIT {
   public void databaseMetaDataTest() throws ClassNotFoundException, SQLException {
     Connection connection = null;
     try {
-      connection = EnvUtil.getConnection();
+      connection = EnvFactory.getEnv().getConnection();
       databaseMetaData = connection.getMetaData();
       showTimeseriesInJson();
 
@@ -210,7 +210,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showVersion() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String sql = "show version";
       try {
@@ -229,7 +229,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showDevicesWithSgTest() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls =
           new String[] {
@@ -271,7 +271,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showDevicesTest() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls =
           new String[] {"show devices root.ln", "show devices root.ln.wf01.wt01.temperature"};
@@ -308,7 +308,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showChildPaths() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls = new String[] {"show child paths root.ln"};
       String[] standards = new String[] {"root.ln.wf01,\n"};
@@ -340,7 +340,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showChildNodes() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls = new String[] {"show child nodes root.ln"};
       String[] standards = new String[] {"wf01,\n"};
@@ -372,7 +372,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showCountTimeSeries() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls = new String[] {"COUNT TIMESERIES root.ln", "COUNT TIMESERIES"};
       String[] standards = new String[] {"2,\n", "2,\n"};
@@ -404,7 +404,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showCountDevices() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls =
           new String[] {
@@ -439,7 +439,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showCountStorageGroup() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls =
           new String[] {
@@ -476,7 +476,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showCountTimeSeriesGroupBy() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls = new String[] {"COUNT TIMESERIES root group by level=1"};
       Set<String>[] standards =
@@ -506,7 +506,7 @@ public class IoTDBMetadataFetchIT {
 
   @Test
   public void showCountNodes() throws SQLException, ClassNotFoundException {
-    try (Connection connection = EnvUtil.getConnection();
+    try (Connection connection = EnvFactory.getEnv().getConnection();
         Statement statement = connection.createStatement()) {
       String[] sqls = new String[] {"COUNT NODES root level=1"};
       String[] standards = new String[] {"3,\n"};
