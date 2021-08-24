@@ -55,7 +55,7 @@ public class ClusterConfig {
 
   private boolean useAsyncApplier = true;
 
-  private int connectionTimeoutInMS = (int) TimeUnit.SECONDS.toMillis(20);
+  private int connectionTimeoutInMS = 100;
 
   private long heartbeatIntervalMs = TimeUnit.SECONDS.toMillis(1);
 

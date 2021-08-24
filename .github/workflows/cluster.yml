@@ -1,7 +1,4 @@
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-name: Main Mac and Linux
+name: Main Mac and Linux on cluster
 
 on:
   push:
@@ -53,4 +50,4 @@ jobs:
         shell: bash
         # we do not compile client-cpp for saving time, it is tested in client.yml
         # we can skip influxdb-protocol because it has been tested separately in influxdb-protocol.yml
-        run: mvn -B clean verify -Dtest.port.closed=true -P '!testcontainer,!influxdb-protocol'
+        run: mvn -B clean verify -Dtest.port.closed=true -pl integration -PCluster
