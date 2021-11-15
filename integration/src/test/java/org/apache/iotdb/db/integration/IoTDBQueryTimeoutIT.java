@@ -19,7 +19,7 @@
 package org.apache.iotdb.db.integration;
 
 import org.apache.iotdb.db.query.control.QueryResourceManager;
-import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.db.utils.env.EnvironmentUtils;
 import org.apache.iotdb.integration.env.EnvFactory;
 import org.apache.iotdb.itbase.category.ClusterTest;
 import org.apache.iotdb.itbase.category.LocalStandaloneTest;

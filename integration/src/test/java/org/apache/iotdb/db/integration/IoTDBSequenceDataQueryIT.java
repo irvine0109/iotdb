@@ -52,7 +52,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.iotdb.db.utils.EnvironmentUtils.TEST_QUERY_CONTEXT;
+import static org.apache.iotdb.db.utils.env.EnvironmentUtils.TEST_QUERY_CONTEXT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 

@@ -21,7 +21,7 @@ package org.apache.iotdb.db.integration.aggregation;
 import org.apache.iotdb.db.constant.TestConstant;
 import org.apache.iotdb.db.qp.Planner;
 import org.apache.iotdb.db.qp.logical.crud.AggregationQueryOperator;
-import org.apache.iotdb.db.utils.EnvironmentUtils;
+import org.apache.iotdb.db.utils.env.EnvironmentUtils;
 import org.apache.iotdb.itbase.category.LocalStandaloneTest;
 import org.apache.iotdb.jdbc.Config;
 
