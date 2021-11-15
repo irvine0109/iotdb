@@ -23,6 +23,8 @@ import org.apache.iotdb.itbase.env.BaseEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class EnvFactory {
   private static BaseEnv env;
   private static final Logger logger = LoggerFactory.getLogger(EnvFactory.class);
@@ -36,6 +38,7 @@ public class EnvFactory {
             env =
                 (BaseEnv)
                     Class.forName("org.apache.iotdb.db.integration.env.StandaloneEnv")
+                        .getDeclaredConstructor()
                         .newInstance();
             break;
           case "Remote":
@@ -47,7 +50,11 @@ public class EnvFactory {
           default:
             throw new ClassNotFoundException("The Property class of TestEnv not found");
         }
-      } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+      } catch (ClassNotFoundException
+          | InstantiationException
+          | NoSuchMethodException
+          | InvocationTargetException
+          | IllegalAccessException e) {
         e.printStackTrace();
         System.exit(-1);
       }
