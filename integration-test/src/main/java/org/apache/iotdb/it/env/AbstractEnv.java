@@ -42,61 +42,63 @@ import java.util.Random;
 import static org.apache.iotdb.jdbc.Config.VERSION;
 import static org.junit.Assert.fail;
 
-public abstract class ClusterEnvBase implements BaseEnv {
-  private static final Logger logger = LoggerFactory.getLogger(ClusterEnvBase.class);
-  private List<ConfigNode> configNodes;
-  private List<DataNode> dataNodes;
+public abstract class AbstractEnv implements BaseEnv {
+  private static final Logger logger = LoggerFactory.getLogger(AbstractEnv.class);
+  protected List<ConfigNodeWrapper> configNodeWrapperList;
+  protected List<DataNodeWrapper> dataNodeWrapperList;
   private final Random rand = new Random();
   private String nextTestCase = null;
 
   protected void initEnvironment(int configNodesNum, int dataNodesNum) throws InterruptedException {
-    this.configNodes = new ArrayList<>();
-    this.dataNodes = new ArrayList<>();
+    this.configNodeWrapperList = new ArrayList<>();
+    this.dataNodeWrapperList = new ArrayList<>();
 
     String testName = getTestClassName();
     if (nextTestCase != null) {
       testName = testName + "_" + nextTestCase;
     }
 
-    ConfigNode seedConfigNode = new ConfigNode(true, "", testName);
-    seedConfigNode.createDir();
-    seedConfigNode.changeConfig(null);
-    seedConfigNode.start();
-    String targetConfignode = seedConfigNode.getIpAndPortString();
-    this.configNodes.add(seedConfigNode);
-    logger.info("In test " + testName + " SeedConfigNode " + seedConfigNode.getId() + " started.");
+    ConfigNodeWrapper seedConfigNodeWrapper = new ConfigNodeWrapper(true, "", testName);
+    seedConfigNodeWrapper.createDir();
+    seedConfigNodeWrapper.changeConfig(ConfigFactory.getConfig().getConfignodeProperties());
+    seedConfigNodeWrapper.start();
+    String targetConfigNode = seedConfigNodeWrapper.getIpAndPortString();
+    this.configNodeWrapperList.add(seedConfigNodeWrapper);
+    logger.info(
+        "In test " + testName + " SeedConfigNode " + seedConfigNodeWrapper.getId() + " started.");
 
     for (int i = 1; i < configNodesNum; i++) {
-      ConfigNode configNode = new ConfigNode(false, targetConfignode, testName);
-      configNode.createDir();
-      configNode.changeConfig(null);
-      configNode.start();
-      this.configNodes.add(configNode);
-      logger.info("In test " + testName + " ConfigNode " + configNode.getId() + " started.");
+      ConfigNodeWrapper configNodeWrapper =
+          new ConfigNodeWrapper(false, targetConfigNode, testName);
+      configNodeWrapper.createDir();
+      configNodeWrapper.changeConfig(ConfigFactory.getConfig().getConfignodeProperties());
+      configNodeWrapper.start();
+      this.configNodeWrapperList.add(configNodeWrapper);
+      logger.info("In test " + testName + " ConfigNode " + configNodeWrapper.getId() + " started.");
     }
 
     for (int i = 0; i < dataNodesNum; i++) {
-      DataNode dataNode = new DataNode(targetConfignode, testName);
-      dataNode.createDir();
-      dataNode.changeConfig(ConfigFactory.getConfig().getEngineProperties());
-      dataNode.start();
-      this.dataNodes.add(dataNode);
-      logger.info("In test " + testName + " DataNode " + dataNode.getId() + " started.");
+      DataNodeWrapper dataNodeWrapper = new DataNodeWrapper(targetConfigNode, testName);
+      dataNodeWrapper.createDir();
+      dataNodeWrapper.changeConfig(ConfigFactory.getConfig().getEngineProperties());
+      dataNodeWrapper.start();
+      this.dataNodeWrapperList.add(dataNodeWrapper);
+      logger.info("In test " + testName + " DataNode " + dataNodeWrapper.getId() + " started.");
     }
 
     testWorking();
   }
 
   private void cleanupEnvironment() {
-    for (DataNode dataNode : this.dataNodes) {
-      dataNode.stop();
-      dataNode.waitingToShutDown();
-      dataNode.destroyDir();
+    for (DataNodeWrapper dataNodeWrapper : this.dataNodeWrapperList) {
+      dataNodeWrapper.stop();
+      dataNodeWrapper.waitingToShutDown();
+      dataNodeWrapper.destroyDir();
     }
-    for (ConfigNode configNode : this.configNodes) {
-      configNode.stop();
-      configNode.waitingToShutDown();
-      configNode.destroyDir();
+    for (ConfigNodeWrapper configNodeWrapper : this.configNodeWrapperList) {
+      configNodeWrapper.stop();
+      configNodeWrapper.waitingToShutDown();
+      configNodeWrapper.destroyDir();
     }
     nextTestCase = null;
   }
@@ -180,12 +182,13 @@ public abstract class ClusterEnvBase implements BaseEnv {
         (IoTDBConnection)
             DriverManager.getConnection(
                 Config.IOTDB_URL_PREFIX
-                    + this.dataNodes.get(0).getIp()
+                    + this.dataNodeWrapperList.get(0).getIp()
                     + ":"
-                    + this.dataNodes.get(0).getPort(),
+                    + this.dataNodeWrapperList.get(0).getPort(),
                 System.getProperty("User", "root"),
                 System.getProperty("Password", "root"));
     connection.setQueryTimeout(queryTimeout);
+
     return connection;
   }
 
@@ -196,7 +199,8 @@ public abstract class ClusterEnvBase implements BaseEnv {
 
   protected NodeConnection getWriteConnection(Constant.Version version) throws SQLException {
     // Randomly choose a node for handling write requests
-    DataNode dataNode = this.dataNodes.get(rand.nextInt(this.dataNodes.size()));
+    DataNodeWrapper dataNode =
+        this.dataNodeWrapperList.get(rand.nextInt(this.dataNodeWrapperList.size()));
     String endpoint = dataNode.getIp() + ":" + dataNode.getPort();
     Connection writeConnection =
         DriverManager.getConnection(
@@ -212,7 +216,7 @@ public abstract class ClusterEnvBase implements BaseEnv {
 
   protected List<NodeConnection> getReadConnections(Constant.Version version) throws SQLException {
     List<NodeConnection> readConnections = new ArrayList<>();
-    for (DataNode dataNode : this.dataNodes) {
+    for (DataNodeWrapper dataNode : this.dataNodeWrapperList) {
       String endpoint = dataNode.getIp() + ":" + dataNode.getPort();
       Connection readConnection =
           DriverManager.getConnection(

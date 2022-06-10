@@ -27,17 +27,26 @@ import java.util.Properties;
 
 import static org.junit.Assert.fail;
 
-public class ConfigNode extends ClusterNodeBase {
+public class DataNodeWrapper extends AbstractNodeWrapper {
 
-  private final int consensusPort;
-  private final String configPath;
   private final String targetConfigNode;
+  private final String configPath;
 
-  public ConfigNode(boolean isSeed, String targetConfigNode, String testName) {
+  private final int dataBlockManagerPort;
+  private final int internalPort;
+  private final int dataRegionConsensusPort;
+  private final int schemaRegionConsensusPort;
+
+  public DataNodeWrapper(String targetConfigNode, String testName) {
+
+    this.targetConfigNode = targetConfigNode;
 
     int[] portList = super.searchAvailablePorts();
     super.setPort(portList[0]);
-    this.consensusPort = portList[1];
+    this.dataBlockManagerPort = portList[1];
+    this.internalPort = portList[2];
+    this.dataRegionConsensusPort = portList[3];
+    this.schemaRegionConsensusPort = portList[4];
 
     super.setId("node" + this.getPort());
 
@@ -54,7 +63,7 @@ public class ConfigNode extends ClusterNodeBase {
             + File.separator
             + testName
             + File.separator
-            + "Config"
+            + "Data"
             + super.getId()
             + ".log";
     super.setLogPath(logPath);
@@ -64,11 +73,11 @@ public class ConfigNode extends ClusterNodeBase {
             + File.separator
             + "template-node"
             + File.separator
-            + "confignode"
+            + "datanode"
             + File.separator
             + "sbin"
             + File.separator
-            + "start-confignode"
+            + "start-datanode"
             + ".sh";
     super.setScriptPath(scriptPath);
 
@@ -77,17 +86,11 @@ public class ConfigNode extends ClusterNodeBase {
             + File.separator
             + "template-node"
             + File.separator
-            + "confignode"
+            + "datanode"
             + File.separator
             + "conf"
             + File.separator
-            + "iotdb-confignode.properties";
-
-    if (isSeed) {
-      this.targetConfigNode = getIpAndPortString();
-    } else {
-      this.targetConfigNode = targetConfigNode;
-    }
+            + "iotdb-engine.properties";
   }
 
   @Override
@@ -96,24 +99,25 @@ public class ConfigNode extends ClusterNodeBase {
       Properties configProperties = new Properties();
       configProperties.load(Files.newInputStream(Paths.get(this.configPath)));
       configProperties.setProperty("rpc_address", super.getIp());
+      configProperties.setProperty("internal_ip", "127.0.0.1");
       configProperties.setProperty("rpc_port", String.valueOf(super.getPort()));
-      configProperties.setProperty("consensus_port", String.valueOf(this.consensusPort));
-      configProperties.setProperty("target_confignode", this.targetConfigNode);
       configProperties.setProperty(
-          "schema_region_consensus_protocol_class",
-          "org.apache.iotdb.consensus.ratis.RatisConsensus");
+          "data_block_manager_port", String.valueOf(this.dataBlockManagerPort));
+      configProperties.setProperty("internal_port", String.valueOf(this.internalPort));
       configProperties.setProperty(
-          "data_region_consensus_protocol_class",
-          "org.apache.iotdb.consensus.ratis.RatisConsensus");
-      configProperties.setProperty("schema_replication_factor", "2");
-      configProperties.setProperty("data_replication_factor", "2");
+          "data_region_consensus_port", String.valueOf(this.dataRegionConsensusPort));
+      configProperties.setProperty(
+          "schema_region_consensus_port", String.valueOf(this.schemaRegionConsensusPort));
       configProperties.setProperty("connection_timeout_ms", "30000");
+      if (this.targetConfigNode != null) {
+        configProperties.setProperty("config_nodes", this.targetConfigNode);
+      }
       if (properties != null && !properties.isEmpty()) {
         configProperties.putAll(properties);
       }
       configProperties.store(new FileWriter(this.configPath), null);
     } catch (IOException ex) {
-      fail("Change the config of config node failed. " + ex);
+      fail("Change the config of data node failed. " + ex);
     }
   }
 }
