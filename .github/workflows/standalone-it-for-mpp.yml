@@ -1,4 +1,4 @@
-name: New Cluster IT
+name: New Standalone IT
 
 on:
   push:
