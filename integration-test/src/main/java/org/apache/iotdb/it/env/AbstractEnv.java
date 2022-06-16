@@ -194,13 +194,17 @@ public abstract class AbstractEnv implements BaseEnv {
 
   @Override
   public Connection getConnection(Constant.Version version) throws SQLException {
-    return new ClusterTestConnection(getWriteConnection(version), getReadConnections(version));
+    if (System.getProperty("ReadAndVerifyWithMultiNode", "true").equalsIgnoreCase("true")) {
+      return new ClusterTestConnection(getWriteConnection(version), getReadConnections(version));
+    } else {
+      return getWriteConnection(version).getUnderlyingConnecton();
+    }
   }
 
   protected NodeConnection getWriteConnection(Constant.Version version) throws SQLException {
     DataNodeWrapper dataNode;
 
-    if (System.getProperty("RandomSelectWriteNode", "true").equals("true")) {
+    if (System.getProperty("RandomSelectWriteNode", "true").equalsIgnoreCase("true")) {
       // Randomly choose a node for handling write requests
       dataNode = this.dataNodeWrapperList.get(rand.nextInt(this.dataNodeWrapperList.size()));
     } else {
@@ -235,9 +239,6 @@ public abstract class AbstractEnv implements BaseEnv {
               NodeConnection.NodeRole.DATA_NODE,
               NodeConnection.ConnectionRole.READ,
               readConnection));
-      if (System.getProperty("ReadAndVerifyWithMultiNode", "true").equals("false")) {
-        break;
-      }
     }
 
     return readConnections;

@@ -399,8 +399,8 @@
                                     <reuseForks>false</reuseForks>
                                     <systemPropertyVariables>
                                         <TestEnv>LocalStandaloneOnMpp</TestEnv>
-                                        <RandomSelectWriteNode>${integrationTest.randomSelectWriteNode}</RandomSelectWriteNode>
-                                        <ReadAndVerifyWithMultiNode>${integrationTest.readAndVerifyWithMultiNode}</ReadAndVerifyWithMultiNode>
+                                        <RandomSelectWriteNode>false</RandomSelectWriteNode>
+                                        <ReadAndVerifyWithMultiNode>false</ReadAndVerifyWithMultiNode>
                                     </systemPropertyVariables>
                                     <summaryFile>target/failsafe-reports/failsafe-summary-LocalStandaloneOnMppIT.xml</summaryFile>
                                 </configuration>

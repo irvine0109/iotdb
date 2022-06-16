@@ -51,7 +51,7 @@ jobs:
         # we can skip influxdb-protocol because it has been tested separately in influxdb-protocol.yml
         run: |
           mvn clean verify \
-          -DskipUTs
+          -DskipUTs \
           -DintegrationTest.forkCount=2 \
           -pl integration-test \
           -am -PLocalStandaloneOnMppIT
