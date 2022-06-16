@@ -198,9 +198,15 @@ public abstract class AbstractEnv implements BaseEnv {
   }
 
   protected NodeConnection getWriteConnection(Constant.Version version) throws SQLException {
-    // Randomly choose a node for handling write requests
-    DataNodeWrapper dataNode =
-        this.dataNodeWrapperList.get(rand.nextInt(this.dataNodeWrapperList.size()));
+    DataNodeWrapper dataNode;
+
+    if (System.getProperty("RandomSelectWriteNode", "true").equals("true")) {
+      // Randomly choose a node for handling write requests
+      dataNode = this.dataNodeWrapperList.get(rand.nextInt(this.dataNodeWrapperList.size()));
+    } else {
+      dataNode = this.dataNodeWrapperList.get(0);
+    }
+
     String endpoint = dataNode.getIp() + ":" + dataNode.getPort();
     Connection writeConnection =
         DriverManager.getConnection(
@@ -229,7 +235,11 @@ public abstract class AbstractEnv implements BaseEnv {
               NodeConnection.NodeRole.DATA_NODE,
               NodeConnection.ConnectionRole.READ,
               readConnection));
+      if (System.getProperty("ReadAndVerifyWithMultiNode", "true").equals("false")) {
+        break;
+      }
     }
+
     return readConnections;
   }
 

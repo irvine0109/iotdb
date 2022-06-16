@@ -30,6 +30,8 @@
     <artifactId>integration-test</artifactId>
     <properties>
         <integrationTest.forkCount>1</integrationTest.forkCount>
+        <integrationTest.randomSelectWriteNode>true</integrationTest.randomSelectWriteNode>
+        <integrationTest.readAndVerifyWithMultiNode>true</integrationTest.readAndVerifyWithMultiNode>
     </properties>
     <dependencies>
         <dependency>
@@ -290,6 +292,8 @@
                                     <reuseForks>false</reuseForks>
                                     <systemPropertyVariables>
                                         <TestEnv>Cluster1</TestEnv>
+                                        <RandomSelectWriteNode>${integrationTest.randomSelectWriteNode}</RandomSelectWriteNode>
+                                        <ReadAndVerifyWithMultiNode>${integrationTest.readAndVerifyWithMultiNode}</ReadAndVerifyWithMultiNode>
                                     </systemPropertyVariables>
                                     <summaryFile>target/failsafe-reports/failsafe-summary-ClusterIT.xml</summaryFile>
                                 </configuration>
@@ -395,6 +399,8 @@
                                     <reuseForks>false</reuseForks>
                                     <systemPropertyVariables>
                                         <TestEnv>LocalStandaloneOnMpp</TestEnv>
+                                        <RandomSelectWriteNode>${integrationTest.randomSelectWriteNode}</RandomSelectWriteNode>
+                                        <ReadAndVerifyWithMultiNode>${integrationTest.readAndVerifyWithMultiNode}</ReadAndVerifyWithMultiNode>
                                     </systemPropertyVariables>
                                     <summaryFile>target/failsafe-reports/failsafe-summary-LocalStandaloneOnMppIT.xml</summaryFile>
                                 </configuration>
